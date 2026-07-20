@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dy03kh0l077mr"]
+
+[ext_resource type="Script" uid="uid://byt6ocp1hm6ec" path="res://scripts/tests/test_core_gameplay.gd" id="1_3q43l"]
+
+[node name="TestCoreGameplay" type="Node2D" unique_id=98780527]
+script = ExtResource("1_3q43l")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=916505843]
+offset_left = 8.0
+offset_top = 9.0
+offset_right = 174.0
+offset_bottom = 319.0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=708169150]
+position = Vector2(960, 540)
