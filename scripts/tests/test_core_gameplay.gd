@@ -41,6 +41,7 @@ static func calculate_game_instance_args(level_config: LevelConfig) -> GameInsta
 		var door_data := CoreGameplay.DoorData.new()
 		door_data.position = dc.position
 		door_data.need_pads_indices = dc.need_pads_indices
+		level_data.doors.append(door_data)
 	var initial_state := CoreGameplay.GameState.new()
 	initial_state.current_character_index = 0
 	initial_state.characters = []
@@ -49,9 +50,9 @@ static func calculate_game_instance_args(level_config: LevelConfig) -> GameInsta
 		char_inst.inst_position = cc.inst_pos
 		char_inst.inst_face = cc.inst_face
 		initial_state.characters.append(char_inst)
-	initial_state.boxs = []
+	initial_state.boxes = []
 	for b in level_config.boxes:
-		initial_state.boxs.append(b)
+		initial_state.boxes.append(b)
 	var result := GameInstanceArgs.new()
 	result.level_data = level_data
 	result.initial_state = initial_state
@@ -68,17 +69,17 @@ func setup_all_level_configs():
 	var char_config := CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.WARRIOR
 	char_config.inst_pos = Vector2i(1, 0)
-	char_config.inst_face = 0
+	char_config.inst_face = 1
 	level_config.characters.append(char_config)
 	char_config = CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.THIEF
 	char_config.inst_pos = Vector2i(1, 1)
-	char_config.inst_face = 0
+	char_config.inst_face = 2
 	level_config.characters.append(char_config)
 	char_config = CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.MAGE
 	char_config.inst_pos = Vector2i(1, 2)
-	char_config.inst_face = 0
+	char_config.inst_face = 3
 	level_config.characters.append(char_config)
 	level_config.boxes = [
 		Vector2i(2, 0)
@@ -88,7 +89,7 @@ func setup_all_level_configs():
 	]
 	var door_config: DoorConfig = DoorConfig.new();
 	door_config.position = Vector2i(4, 0)
-	door_config.need_pads_indices = []
+	door_config.need_pads_indices = [0]
 	level_config.doors.append(door_config)
 	level_configs.append(level_config)
 	
@@ -109,10 +110,54 @@ func _ready() -> void:
 	setup_all_level_configs()
 	setup_buttons()
 	
+func _input(evt: InputEvent) -> void:
+	if current_game_instance == null:
+		return
+	if evt is InputEventKey:
+		var evt_key = evt as InputEventKey
+		if evt_key.is_pressed() and not evt_key.is_echo():
+			var ipt: CoreGameplay.PlayerInput = CoreGameplay.PlayerInput.MOVE_UP
+			var has_ipt := false
+			if evt_key.keycode == KEY_W:
+				ipt = CoreGameplay.PlayerInput.MOVE_UP
+				has_ipt = true
+			elif evt_key.keycode == KEY_D:
+				ipt = CoreGameplay.PlayerInput.MOVE_RIGHT
+				has_ipt = true
+			elif evt_key.keycode == KEY_S:
+				ipt = CoreGameplay.PlayerInput.MOVE_DOWN
+				has_ipt = true
+			elif evt_key.keycode == KEY_A:
+				ipt = CoreGameplay.PlayerInput.MOVE_LEFT
+				has_ipt = true
+			elif evt_key.keycode == KEY_R:
+				ipt = CoreGameplay.PlayerInput.RESET
+				has_ipt = true
+			elif evt_key.keycode == KEY_C:
+				ipt = CoreGameplay.PlayerInput.SWITCH
+				has_ipt = true
+			elif evt_key.keycode == KEY_Z:
+				ipt = CoreGameplay.PlayerInput.REWIND
+				has_ipt = true
+			if has_ipt:
+				var output_events: Array[CoreGameplay.Event] = []
+				CoreGameplay.core_gameplay_handle_input(ipt, current_game_instance, output_events)
+				print("INPUT: %s" % ipt)
+				print("EVENTS_COUNT: %s" % len(output_events))
+				for output_event in output_events:
+					var line = ""
+					line += "- %s :: [" % output_event.type
+					for arg_idx in range(0, len(output_event.args)):
+						line += str(output_event.args[arg_idx])
+						if arg_idx < len(output_event.args) - 1:
+							line += ","
+					line += "]"
+					print(line)
+	
 func draw_range(range: Rect2i, color: Color, padding: float = 0.0):
 	var rect = Rect2(
 		range.position.x * 50.0 + 100.0 + padding,
-		range.position.y * 50.0 + 100.0 + padding,
+		1000 - (range.position.y + range.size.y) * 50.0 + padding,
 		range.size.x * 50 - padding * 2,
 		range.size.y * 50 - padding * 2
 	)
@@ -120,16 +165,16 @@ func draw_range(range: Rect2i, color: Color, padding: float = 0.0):
 	
 func draw_arrow(pos: Vector2i, face: int):
 	var center_x := pos.x * 50 + 125.0
-	var center_y := pos.y * 50 + 125.0
+	var center_y := 975.0 - pos.y * 50
 	if face == 0:
 		draw_line(Vector2(center_x, center_y - 22.0), Vector2(center_x, center_y + 22.0), Color.WHITE)
-		draw_circle(Vector2(center_x, center_y + 22.0), 5, Color.WHITE)
+		draw_circle(Vector2(center_x, center_y - 22.0), 5, Color.WHITE)
 	elif face == 1:
 		draw_line(Vector2(center_x - 22.0, center_y), Vector2(center_x + 22.0, center_y), Color.WHITE)
 		draw_circle(Vector2(center_x + 22.0, center_y), 5, Color.WHITE)
 	elif face == 2:
 		draw_line(Vector2(center_x, center_y - 22.0), Vector2(center_x, center_y + 22.0), Color.WHITE)
-		draw_circle(Vector2(center_x, center_y - 22.0), 5, Color.WHITE)
+		draw_circle(Vector2(center_x, center_y + 22.0), 5, Color.WHITE)
 	else:
 		draw_line(Vector2(center_x - 22.0, center_y), Vector2(center_x + 22.0, center_y), Color.WHITE)
 		draw_circle(Vector2(center_x - 22.0, center_y), 5, Color.WHITE)
@@ -157,13 +202,19 @@ func _draw() -> void:
 			cl = Color.BLUE
 		draw_range(Rect2i(ci.inst_position.x, ci.inst_position.y, 1, 1), cl, 5)
 		draw_arrow(ci.inst_position, ci.inst_face)
-	for box in current_state.boxs:
+	for box in current_state.boxes:
 		draw_range(Rect2i(box.x, box.y, 1, 1), Color.YELLOW, 5)
 	for idx in range(0, len(current_state.pads_active)):
 		var pad_pos = level_data.pads[idx]
 		var pad_active = current_state.pads_active[idx]
-		draw_range(Rect2i(pad_pos.x, pad_pos.y, 1, 1), Color.DARK_CYAN, 5)
+		var color = Color.DARK_CYAN
+		if pad_active:
+			color = Color(color.r, color.g, color.b, 0.4)
+		draw_range(Rect2i(pad_pos.x, pad_pos.y, 1, 1), color)
 	for idx in range(0, len(current_state.doors_unlock)):
-		var door_pos = level_data.doors[idx]
-		var door_active = current_state.doors_unlock[idx]
-		draw_range(Rect2i(door_pos.x, door_pos.y, 1, 1), Color.BROWN, 5)
+		var door_pos = level_data.doors[idx].position
+		var door_unlock = current_state.doors_unlock[idx]
+		var color = Color.BROWN
+		if door_unlock:
+			color = Color(color.r, color.g, color.b, 0.4)
+		draw_range(Rect2i(door_pos.x, door_pos.y, 1, 1), color)
