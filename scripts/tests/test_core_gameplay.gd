@@ -14,7 +14,7 @@ class DoorConfig:
 class LevelConfig:
 	var obstacles: Array[Vector2i]
 	var range: Rect2i
-	var goal: Vector2i
+	var goals: Array[Vector2i]
 	var characters: Array[CharacterConfig]
 	var boxes: Array[Vector2i]
 	var pads: Array[Vector2i]
@@ -31,7 +31,7 @@ static func calculate_game_instance_args(level_config: LevelConfig) -> GameInsta
 	var level_data := CoreGameplay.LevelData.new()
 	level_data.obstacles = level_config.obstacles
 	level_data.range = level_config.range
-	level_data.goal = level_config.goal
+	level_data.goals = level_config.goals
 	level_data.character_data = []
 	for cc in level_config.characters:
 		level_data.character_data.append(cc.inst_cls)
@@ -52,7 +52,10 @@ static func calculate_game_instance_args(level_config: LevelConfig) -> GameInsta
 		initial_state.characters.append(char_inst)
 	initial_state.boxes = []
 	for b in level_config.boxes:
-		initial_state.boxes.append(b)
+		var new_box_inst := CoreGameplay.BoxInstance.new()
+		new_box_inst.position = b
+		new_box_inst.killed = false
+		initial_state.boxes.append(new_box_inst)
 	var result := GameInstanceArgs.new()
 	result.level_data = level_data
 	result.initial_state = initial_state
@@ -64,7 +67,11 @@ func setup_all_level_configs():
 		Vector2i(0, 0)
 	]
 	level_config.range = Rect2i(0, 0, 10, 6)
-	level_config.goal = Vector2i(4, 3)
+	level_config.goals = [
+		Vector2i(9, 5),
+		Vector2i(9, 3),
+		Vector2i(9, 1),
+	]
 	level_config.characters = []
 	var char_config := CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.WARRIOR
@@ -110,11 +117,41 @@ func _ready() -> void:
 	setup_all_level_configs()
 	setup_buttons()
 	
+func util_stringify_event(evt: CoreGameplay.Event) -> String:
+	var result := ""
+	if evt.type == CoreGameplay.EventType.REWINDED:
+		result = "REWINDED"
+	elif evt.type == CoreGameplay.EventType.RESET:
+		result = "RESET"
+	elif evt.type == CoreGameplay.EventType.SWITCH:
+		result = "SWITCH"
+	elif evt.type == CoreGameplay.EventType.CHAR_MOVE:
+		result = "CHAR_MOVE"
+	elif evt.type == CoreGameplay.EventType.BOX_MOVE:
+		result = "BOX_MOVE"
+	elif evt.type == CoreGameplay.EventType.CHAR_BLOCKED:
+		result = "CHAR_BLOCKED"
+	elif evt.type == CoreGameplay.EventType.PAD_ACTIVE:
+		result = "PAD_ACTIVE"
+	elif evt.type == CoreGameplay.EventType.DOOR_UNLOCK:
+		result = "DOOR_UNLOCK"
+	elif evt.type == CoreGameplay.EventType.KILL:
+		result = "KILL"
+	elif evt.type == CoreGameplay.EventType.WIN:
+		result = "WIN"
+	result += " :: "
+	for arg_idx in range(0, len(evt.args)):
+		var arg = evt.args[arg_idx]
+		result += str(arg)
+		if arg_idx < len(evt.args) - 1:
+			result += ","
+	return result
+	
 func _input(evt: InputEvent) -> void:
 	if current_game_instance == null:
 		return
 	if evt is InputEventKey:
-		var evt_key = evt as InputEventKey
+		var evt_key := evt as InputEventKey
 		if evt_key.is_pressed() and not evt_key.is_echo():
 			var ipt: CoreGameplay.PlayerInput = CoreGameplay.PlayerInput.MOVE_UP
 			var has_ipt := false
@@ -145,17 +182,10 @@ func _input(evt: InputEvent) -> void:
 				print("INPUT: %s" % ipt)
 				print("EVENTS_COUNT: %s" % len(output_events))
 				for output_event in output_events:
-					var line = ""
-					line += "- %s :: [" % output_event.type
-					for arg_idx in range(0, len(output_event.args)):
-						line += str(output_event.args[arg_idx])
-						if arg_idx < len(output_event.args) - 1:
-							line += ","
-					line += "]"
-					print(line)
+					print(util_stringify_event(output_event))
 	
 func draw_range(range: Rect2i, color: Color, padding: float = 0.0):
-	var rect = Rect2(
+	var rect := Rect2(
 		range.position.x * 50.0 + 100.0 + padding,
 		1000 - (range.position.y + range.size.y) * 50.0 + padding,
 		range.size.x * 50 - padding * 2,
@@ -185,14 +215,16 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	if current_game_instance == null:
 		return
-	var current_state = current_game_instance.history_states[len(current_game_instance.history_states) - 1]
-	var level_data = current_game_instance.level_data
+	var current_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
+	var level_data := current_game_instance.level_data
 	draw_range(level_data.range, Color.DARK_GRAY)
 	for obs in level_data.obstacles:
 		draw_range(Rect2i(obs.x, obs.y, 1, 1), Color.AQUA)
 	for idx in range(0, len(current_state.characters)):
 		var cd: CoreGameplay.CharacterClass = level_data.character_data[idx]
 		var ci: CoreGameplay.CharacterInstance = current_state.characters[idx]
+		if ci.killed:
+			continue
 		var cl: Color = Color.MAGENTA
 		if cd == CoreGameplay.CharacterClass.WARRIOR:
 			cl = Color.RED
@@ -203,18 +235,26 @@ func _draw() -> void:
 		draw_range(Rect2i(ci.inst_position.x, ci.inst_position.y, 1, 1), cl, 5)
 		draw_arrow(ci.inst_position, ci.inst_face)
 	for box in current_state.boxes:
-		draw_range(Rect2i(box.x, box.y, 1, 1), Color.YELLOW, 5)
+		if box.killed:
+			continue
+		draw_range(Rect2i(box.position.x, box.position.y, 1, 1), Color.DARK_ORANGE, 5)
 	for idx in range(0, len(current_state.pads_active)):
-		var pad_pos = level_data.pads[idx]
-		var pad_active = current_state.pads_active[idx]
-		var color = Color.DARK_CYAN
+		var pad_pos := level_data.pads[idx]
+		var pad_active := current_state.pads_active[idx]
+		var color := Color.DARK_CYAN
 		if pad_active:
 			color = Color(color.r, color.g, color.b, 0.4)
 		draw_range(Rect2i(pad_pos.x, pad_pos.y, 1, 1), color)
 	for idx in range(0, len(current_state.doors_unlock)):
-		var door_pos = level_data.doors[idx].position
-		var door_unlock = current_state.doors_unlock[idx]
-		var color = Color.BROWN
+		var door_pos := level_data.doors[idx].position
+		var door_unlock := current_state.doors_unlock[idx]
+		var color := Color.BROWN
 		if door_unlock:
 			color = Color(color.r, color.g, color.b, 0.4)
 		draw_range(Rect2i(door_pos.x, door_pos.y, 1, 1), color)
+	for idx in range(0, len(current_state.goals_active)):
+		var goal: Vector2i = level_data.goals[idx]
+		var color := Color.YELLOW
+		if current_state.goals_active[idx]:
+			color = Color(color.r, color.g, color.b, 0.4)
+		draw_range(Rect2i(goal.x, goal.y, 1, 1), color)

@@ -7,6 +7,11 @@ enum PlayerInput { MOVE_UP, MOVE_RIGHT, MOVE_DOWN, MOVE_LEFT, SWITCH, REWIND, RE
 class CharacterInstance:
 	var inst_position: Vector2i
 	var inst_face: int # 0: top; 1: right; 2: down; 3: left
+	var killed: bool
+	
+class BoxInstance:
+	var position: Vector2i
+	var killed: bool
 
 class DoorData:
 	var position: Vector2i
@@ -15,7 +20,7 @@ class DoorData:
 class LevelData:
 	var obstacles: Array[Vector2i]
 	var range: Rect2i
-	var goal: Vector2i
+	var goals: Array[Vector2i]
 	var character_data: Array[CharacterClass]
 	var pads: Array[Vector2i]
 	var doors: Array[DoorData]
@@ -23,9 +28,10 @@ class LevelData:
 class GameState:
 	var current_character_index: int
 	var characters: Array[CharacterInstance] # the order matters
-	var boxes: Array[Vector2i]
+	var boxes: Array[BoxInstance]
 	var pads_active: Array[bool]
 	var doors_unlock: Array[bool]
+	var goals_active: Array[bool]
 
 class GameInstance:
 	var level_data: LevelData
@@ -35,7 +41,8 @@ class GameInstance:
 # Events
 enum EventType {
 	REWINDED, RESET, SWITCH,
-	CHAR_MOVE, BOX_MOVE, CHAR_BLOCKED, PAD_ACTIVE, DOOR_UNLOCK
+	CHAR_MOVE, BOX_MOVE, CHAR_BLOCKED, PAD_ACTIVE, DOOR_UNLOCK,
+	KILL, WIN
 }
 class Event:
 	var type: EventType
@@ -44,9 +51,10 @@ class Event:
 static func normalize_state(level_data: LevelData, state: GameState):
 	state.pads_active = calculate_pads_active(level_data, state)
 	state.doors_unlock = calculate_doors_active(level_data, state)
+	state.goals_active = calculate_goals_active(level_data, state)
 	
 static func create_new_game_instance(level_data: LevelData, initial_state: GameState) -> GameInstance:
-	var result = GameInstance.new()
+	var result := GameInstance.new()
 	result.level_data = level_data
 	normalize_state(level_data, initial_state)
 	result.initial_state = initial_state
@@ -74,8 +82,8 @@ static func core_gameplay_handle_input(input: PlayerInput, game_inst: GameInstan
 		evt.args = [cur_state.current_character_index]
 		events.append(evt)
 	else:
-		var cur_state = game_inst.history_states[len(game_inst.history_states) - 1]
-		var next_state = calculate_next_state(input, game_inst.level_data, cur_state, events)
+		var cur_state := game_inst.history_states[len(game_inst.history_states) - 1]
+		var next_state := calculate_next_state(input, game_inst.level_data, cur_state, events)
 		if next_state:
 			game_inst.history_states.append(next_state)
 
@@ -91,14 +99,20 @@ static func util_is_position_blocked(level_data: LevelData, state: GameState, po
 	return false
 static func util_find_movable_in_position(state: GameState, position: Vector2i) -> Array:
 	for ch_idx in range(0, len(state.characters)):
-		if position == state.characters[ch_idx].inst_position:
+		var chr_inst := state.characters[ch_idx]
+		if chr_inst.killed:
+			continue
+		if position == chr_inst.inst_position:
 			return [1, ch_idx]
 	for box_idx in range(0, len(state.boxes)):
-		if position == state.boxes[box_idx]:
+		var box_inst := state.boxes[box_idx]
+		if box_inst.killed:
+			continue
+		if position == box_inst.position:
 			return [2, box_idx]
 	return [0, 0]
 
-static func calculate_next_state(input: PlayerInput, level_data: LevelData, state: GameState, events: Array[Event]):
+static func calculate_next_state(input: PlayerInput, level_data: LevelData, state: GameState, events: Array[Event]) -> GameState:
 	var next_state := GameState.new()
 	next_state.current_character_index = state.current_character_index
 	next_state.characters = []
@@ -122,20 +136,23 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 	for idx in range(0, len(state.characters)):
 		var ch := state.characters[idx]
 		var new_char_inst := CharacterInstance.new()
+		new_char_inst.killed = ch.killed
 		var chr_move_vec := move_vec if idx == state.current_character_index else Vector2i.ZERO
+		if new_char_inst.killed:
+			chr_move_vec = Vector2i.ZERO
 		var new_position := ch.inst_position + chr_move_vec
-		if util_is_position_blocked(level_data, state, new_position):
+		if chr_move_vec != Vector2i.ZERO and util_is_position_blocked(level_data, state, new_position):
 			chr_move_vec = Vector2i.ZERO
 		# handle abilities
 		if state.current_character_index == idx:
 			# warrior ability
 			if level_data.character_data[idx] == CharacterClass.WARRIOR:
 				if chr_move_vec != Vector2i.ZERO:
-					var has_next = true
-					var next_check_pos = new_position
-					var next_pushable_valid = false
-					var next_pushable_type = 0 # 0: unkown; 1: character; 2: box
-					var next_pushable_idx = -1
+					var has_next := true
+					var next_check_pos := new_position
+					var next_pushable_valid := false
+					var next_pushable_type := 0 # 0: unkown; 1: character; 2: box
+					var next_pushable_idx := -1
 					while has_next:
 						has_next = false
 						if util_is_position_blocked(level_data, state, next_check_pos):
@@ -181,7 +198,10 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 
 	next_state.boxes = []
 	for b in state.boxes:
-		next_state.boxes.append(b)
+		var new_box_inst = BoxInstance.new()
+		new_box_inst.position = b.position
+		new_box_inst.killed = b.killed
+		next_state.boxes.append(new_box_inst)
 		
 	# handle passive move
 	for pm in passive_moves:
@@ -191,10 +211,39 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		if pm_t == 1:
 			next_state.characters[pm_idx].inst_position = pm_pos
 		elif pm_t == 2:
-			next_state.boxes[pm_idx] = pm_pos
+			next_state.boxes[pm_idx].position = pm_pos
 
 	next_state.pads_active = calculate_pads_active(level_data, next_state)
 	next_state.doors_unlock = calculate_doors_active(level_data, next_state)
+	next_state.goals_active = calculate_goals_active(level_data, next_state)
+	
+	# kill event, check and emit
+	for door_idx in range(0, len(level_data.doors)):
+		var door_pos = level_data.doors[door_idx].position
+		var door_unlock = next_state.doors_unlock[door_idx]
+		if not door_unlock:
+			for chr_idx in range(0, len(next_state.characters)):
+				var char_inst := next_state.characters[chr_idx]
+				if (not char_inst.killed) and char_inst.inst_position == door_pos:
+					var new_evt := Event.new()
+					new_evt.type = EventType.KILL
+					new_evt.args = [1, chr_idx]
+					events.append(new_evt)
+					char_inst.killed = true
+			for box_idx in range(0, len(next_state.boxes)):
+				var box_inst := next_state.boxes[box_idx]
+				if (not box_inst.killed) and box_inst.position == door_pos:
+					var new_evt := Event.new()
+					new_evt.type = EventType.KILL
+					new_evt.args = [2, box_idx]
+					events.append(new_evt)
+					box_inst.killed = true
+	# win event, check and emit
+	if not next_state.goals_active.has(false):
+		var new_evt := Event.new()
+		new_evt.type = EventType.WIN
+		events.append(new_evt)
+	
 	return next_state
 
 static func calculate_pads_active(level_data: LevelData, state: GameState) -> Array[bool]:
@@ -207,7 +256,7 @@ static func calculate_pads_active(level_data: LevelData, state: GameState) -> Ar
 				break
 		if not has_obj_above:
 			for box in state.boxes:
-				if box == level_data.pads[i]:
+				if box.position == level_data.pads[i]:
 					has_obj_above = true
 					break
 		result.append(has_obj_above)
@@ -223,4 +272,14 @@ static func calculate_doors_active(level_data: LevelData, state: GameState) -> A
 				has_inactive_pad = true
 				break
 		result.append(not has_inactive_pad)
+	return result
+static func calculate_goals_active(level_data: LevelData, state: GameState) -> Array[bool]:
+	var result: Array[bool] = []
+	for i in range(0, len(level_data.goals)):
+		var has_chr_above = false
+		for chr in state.characters:
+			if chr.inst_position == level_data.goals[i]:
+				has_chr_above = true
+				break
+		result.append(has_chr_above)
 	return result
