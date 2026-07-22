@@ -56,7 +56,13 @@ func setup_all_level_configs():
 	
 func level_config_button_callback(idx: int):
 	printt("level_config_button_callback", idx)
-	# todo
+	if current_main_game != null:
+		current_main_game.clearup()
+		current_main_game.queue_free()
+	current_main_game = MainGame.new()
+	current_main_game.name = "MAINGAME_%s" % test_entries[idx].name
+	add_child(current_main_game)
+	current_main_game.setup(test_entries[idx].level_config, test_entries[idx].level_theme_config)
 	printt("SELECTED:", test_entries[idx].name)
 	
 func setup_buttons():
