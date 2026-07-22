@@ -1,68 +1,12 @@
 extends Node2D
 
 @onready var vbox: VBoxContainer = $"VBox"
-
-class CharacterConfig:
-	var inst_cls: CoreGameplay.CharacterClass
-	var inst_pos: Vector2i
-	var inst_face: int
 	
-class DoorConfig:
-	var position: Vector2i
-	var need_pads_indices: Array[int]
-
-class LevelConfig:
-	var obstacles: Array[Vector2i]
-	var range: Rect2i
-	var goals: Array[Vector2i]
-	var characters: Array[CharacterConfig]
-	var boxes: Array[Vector2i]
-	var pads: Array[Vector2i]
-	var doors: Array[DoorConfig]
-	
-class GameInstanceArgs:
-	var level_data: CoreGameplay.LevelData
-	var initial_state: CoreGameplay.GameState
-	
-var level_configs: Array[LevelConfig]
+var level_configs: Array[CoreLevelConfig.LevelConfig]
 var current_game_instance: CoreGameplay.GameInstance = null
-	
-static func calculate_game_instance_args(level_config: LevelConfig) -> GameInstanceArgs:
-	var level_data := CoreGameplay.LevelData.new()
-	level_data.obstacles = level_config.obstacles
-	level_data.range = level_config.range
-	level_data.goals = level_config.goals
-	level_data.character_data = []
-	for cc in level_config.characters:
-		level_data.character_data.append(cc.inst_cls)
-	level_data.pads = level_config.pads
-	level_data.doors = []
-	for dc in level_config.doors:
-		var door_data := CoreGameplay.DoorData.new()
-		door_data.position = dc.position
-		door_data.need_pads_indices = dc.need_pads_indices
-		level_data.doors.append(door_data)
-	var initial_state := CoreGameplay.GameState.new()
-	initial_state.current_character_index = 0
-	initial_state.characters = []
-	for cc in level_config.characters:
-		var char_inst := CoreGameplay.CharacterInstance.new()
-		char_inst.inst_position = cc.inst_pos
-		char_inst.inst_face = cc.inst_face
-		initial_state.characters.append(char_inst)
-	initial_state.boxes = []
-	for b in level_config.boxes:
-		var new_box_inst := CoreGameplay.BoxInstance.new()
-		new_box_inst.position = b
-		new_box_inst.killed = false
-		initial_state.boxes.append(new_box_inst)
-	var result := GameInstanceArgs.new()
-	result.level_data = level_data
-	result.initial_state = initial_state
-	return result
 
 func setup_all_level_configs():
-	var level_config := LevelConfig.new()
+	var level_config := CoreLevelConfig.LevelConfig.new()
 	level_config.obstacles = [
 		Vector2i(0, 0)
 	]
@@ -73,17 +17,17 @@ func setup_all_level_configs():
 		Vector2i(9, 1),
 	]
 	level_config.characters = []
-	var char_config := CharacterConfig.new()
+	var char_config := CoreLevelConfig.CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.WARRIOR
 	char_config.inst_pos = Vector2i(1, 0)
 	char_config.inst_face = 1
 	level_config.characters.append(char_config)
-	char_config = CharacterConfig.new()
+	char_config = CoreLevelConfig.CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.THIEF
 	char_config.inst_pos = Vector2i(1, 1)
 	char_config.inst_face = 2
 	level_config.characters.append(char_config)
-	char_config = CharacterConfig.new()
+	char_config = CoreLevelConfig.CharacterConfig.new()
 	char_config.inst_cls = CoreGameplay.CharacterClass.MAGE
 	char_config.inst_pos = Vector2i(1, 2)
 	char_config.inst_face = 3
@@ -94,7 +38,7 @@ func setup_all_level_configs():
 	level_config.pads = [
 		Vector2i(3, 0)
 	]
-	var door_config: DoorConfig = DoorConfig.new();
+	var door_config: CoreLevelConfig.DoorConfig = CoreLevelConfig.DoorConfig.new();
 	door_config.position = Vector2i(4, 0)
 	door_config.need_pads_indices = [0]
 	level_config.doors.append(door_config)
@@ -102,7 +46,7 @@ func setup_all_level_configs():
 	
 func level_config_button_callback(idx: int):
 	printt("level_config_button_callback", idx)
-	var args := calculate_game_instance_args(level_configs[idx])
+	var args := CoreLevelConfig.calculate_game_instance_args(level_configs[idx])
 	current_game_instance = CoreGameplay.create_new_game_instance(args.level_data, args.initial_state)
 	printt("current_game_instance", current_game_instance)
 	
@@ -232,6 +176,8 @@ func _draw() -> void:
 			cl = Color.GREEN
 		elif cd == CoreGameplay.CharacterClass.MAGE:
 			cl = Color.BLUE
+		if current_state.current_character_index != idx:
+			cl = Color(cl.r, cl.g, cl.b, cl.a * 0.4)
 		draw_range(Rect2i(ci.inst_position.x, ci.inst_position.y, 1, 1), cl, 5)
 		draw_arrow(ci.inst_position, ci.inst_face)
 	for box in current_state.boxes:

@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://dkcbbroykh8ay"]
+
+[ext_resource type="Script" uid="uid://tjehib2smyld" path="res://scripts/tests/test_level_with_theme.gd" id="1_2wanc"]
+
+[node name="TestLevelWithTheme" type="Node" unique_id=1663444675]
+script = ExtResource("1_2wanc")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=1897224243]
+offset_left = 8.0
+offset_top = 9.0
+offset_right = 174.0
+offset_bottom = 319.0
