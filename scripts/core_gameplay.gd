@@ -41,7 +41,7 @@ class GameInstance:
 # Events
 enum EventType {
 	REWINDED, RESET, SWITCH,
-	CHAR_MOVE, BOX_MOVE, CHAR_BLOCKED, PAD_ACTIVE, DOOR_UNLOCK,
+	CHAR_MOVE, CHAR_ROTATE, BOX_MOVE, CHAR_BLOCKED, PAD_ACTIVE, DOOR_UNLOCK, GOAL_ACTIVE,
 	KILL, WIN
 }
 class Event:
@@ -216,6 +216,57 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 	next_state.pads_active = calculate_pads_active(level_data, next_state)
 	next_state.doors_unlock = calculate_doors_active(level_data, next_state)
 	next_state.goals_active = calculate_goals_active(level_data, next_state)
+	# move events, check and emit
+	for chr_idx in range(0, len(next_state.characters)):
+		var prev_pos := state.characters[chr_idx].inst_position
+		var new_pos := next_state.characters[chr_idx].inst_position
+		if new_pos != prev_pos:
+			var evt := Event.new()
+			evt.type = EventType.CHAR_MOVE
+			evt.args = [chr_idx, prev_pos, new_pos]
+			events.append(evt)
+		var prev_face := state.characters[chr_idx].inst_face
+		var new_face := next_state.characters[chr_idx].inst_face
+		if new_pos != prev_pos:
+			var evt := Event.new()
+			evt.type = EventType.CHAR_ROTATE
+			evt.args = [chr_idx, prev_face, new_face]
+			events.append(evt)
+	for box_idx in range(0, len(next_state.boxes)):
+		var prev_pos := state.boxes[box_idx].position
+		var new_pos := next_state.boxes[box_idx].position
+		if new_pos != prev_pos:
+			var evt := Event.new()
+			evt.type = EventType.BOX_MOVE
+			evt.args = [box_idx, prev_pos, new_pos]
+			events.append(evt)
+	# pad event, check and emit
+	for pad_idx in range(0, len(next_state.pads_active)):
+		var prev_active := state.pads_active[pad_idx]
+		var new_active := next_state.pads_active[pad_idx]
+		if new_active != prev_active:
+			var evt := Event.new()
+			evt.type = EventType.PAD_ACTIVE
+			evt.args = [pad_idx, new_active]
+			events.append(evt)
+	# door event, check and emit
+	for door_idx in range(0, len(next_state.doors_unlock)):
+		var prev_unlock := state.doors_unlock[door_idx]
+		var new_unlock := next_state.doors_unlock[door_idx]
+		if new_unlock != prev_unlock:
+			var evt := Event.new()
+			evt.type = EventType.DOOR_UNLOCK
+			evt.args = [door_idx, new_unlock]
+			events.append(evt)
+	# goal event, check and emit
+	for goal_idx in range(0, len(next_state.goals_active)):
+		var prev_active := state.goals_active[goal_idx]
+		var new_active := next_state.goals_active[goal_idx]
+		if prev_active != new_active:
+			var evt := Event.new()
+			evt.type = EventType.GOAL_ACTIVE
+			evt.args = [goal_idx, new_active]
+			events.append(evt)
 	
 	# kill event, check and emit
 	for door_idx in range(0, len(level_data.doors)):
