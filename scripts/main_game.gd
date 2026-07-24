@@ -1,9 +1,34 @@
 class_name MainGame
 extends Node
 
+const FAST_FORWARD_DELTA_TIME_FACTOR: float = 6.0
+const CAMERA_FOCUS_HEIGHT_FACTOR: float = 0.6
+const CAMERA_FOCUS_BACKWARD_FACTOR: float = 0.25
+const CAMERA_FOCUS_POSITION_Y_RATIO: float = 0.4
+
 class WinProcess:
 	var win_base_ticks: int
 	var win_camera_base_pos: Vector3
+
+class MoveEntry:
+	var type: int # 1: character; 2: box
+	var idx: int
+	var from: Vector3
+	var to: Vector3
+
+class CmdNormalMove:
+	var current_time: float
+	var total_time: float
+	var move_entries: Array[MoveEntry]
+class CmdPosExchange:
+	var current_time: float
+	var total_time: float
+	var from_type: int
+	var from_idx: int
+	var from_pos: Vector2i
+	var to_type: int
+	var to_idx: int
+	var to_pos: Vector2i
 
 var current_game_instance: CoreGameplay.GameInstance
 var obstacle_node_map: Dictionary[int, Node3D]
@@ -15,6 +40,9 @@ var goal_node_map: Dictionary[int, Node3D]
 var main_camera: Camera3D
 var player_input_queue: Array[CoreGameplay.PlayerInput] = []
 var core_gameplay_event_queue: Array[CoreGameplay.Event] = []
+var processing_cmd: Variant = null
+var pending_cmd: Variant = null
+var waiting_move_entries: Array[MoveEntry]
 var won: WinProcess = null
 
 func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.LevelThemeConfig):
@@ -91,7 +119,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 		pad_inst.mesh = BoxMesh.new()
 		pad_inst.material_override = StandardMaterial3D.new()
 		pad_inst.material_override.albedo_color = Color.GREEN
-		pad_inst.name = "PAD_%d" % pad_pos
+		pad_inst.name = "PAD_%d" % pad_idx
 		add_child(pad_inst)
 		pad_inst.position = grid_to_world(pad_pos) - Vector3.UP * 0.4
 		pad_inst.scale = Vector3(0.98, 1.0, 0.98)
@@ -103,7 +131,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 		door_inst.mesh = BoxMesh.new()
 		door_inst.material_override = StandardMaterial3D.new()
 		door_inst.material_override.albedo_color = Color.PURPLE
-		door_inst.name = "DOOR_%d" % door_pos
+		door_inst.name = "DOOR_%d" % door_idx
 		add_child(door_inst)
 		door_inst.position = grid_to_world(door_pos) + Vector3.UP * 0.5
 		door_inst.scale = Vector3(0.98, 1.0, 0.98)
@@ -124,9 +152,13 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 	main_camera = Camera3D.new()
 	main_camera.current = true
 	add_child(main_camera)
-	var focus_pos := Vector3(lx + 0.5 * lw, 0.0, -(ly + 0.5 * lh))
-	var camera_pos := focus_pos + Vector3(0.0, 8.0, 4.0)
-	main_camera.fov = 60.0
+	var focus_pos := Vector3(lx + 0.5 * lw, 0.0, -(ly + CAMERA_FOCUS_POSITION_Y_RATIO * lh))
+	var diagonal_length = sqrt(lw * lw + lh * lh)
+	var camera_pos := focus_pos + Vector3(
+		0.0,
+		CAMERA_FOCUS_HEIGHT_FACTOR * diagonal_length,
+		CAMERA_FOCUS_BACKWARD_FACTOR * diagonal_length)
+	main_camera.fov = 65.0
 	main_camera.position = camera_pos
 	main_camera.look_at(focus_pos)
 	won = null
@@ -146,17 +178,28 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		var chr_idx = evt.args[0]
 		var prev_pos = evt.args[1]
 		var new_pos = evt.args[2]
-		character_node_map[chr_idx].position = grid_to_world(new_pos)
+		# character_node_map[chr_idx].position = grid_to_world(new_pos)
+		var new_move_entry = MoveEntry.new()
+		new_move_entry.type = 1
+		new_move_entry.idx = chr_idx
+		new_move_entry.from = grid_to_world(prev_pos)
+		new_move_entry.to = grid_to_world(new_pos)
+		waiting_move_entries.append(new_move_entry)
 	elif evt.type == CoreGameplay.EventType.CHAR_ROTATE:
 		var chr_idx = evt.args[0]
-		var prev_face = evt.args[1]
 		var new_face = evt.args[2]
 		character_node_map[chr_idx].rotation = face_to_rotation(new_face)
 	elif evt.type == CoreGameplay.EventType.BOX_MOVE:
 		var box_idx = evt.args[0]
 		var prev_pos = evt.args[1]
 		var new_pos = evt.args[2]
-		box_node_map[box_idx].position = grid_to_world(new_pos)
+		# box_node_map[box_idx].position = grid_to_world(new_pos)
+		var new_move_entry = MoveEntry.new()
+		new_move_entry.type = 2
+		new_move_entry.idx = box_idx
+		new_move_entry.from = grid_to_world(prev_pos)
+		new_move_entry.to = grid_to_world(new_pos)
+		waiting_move_entries.append(new_move_entry)
 	elif evt.type == CoreGameplay.EventType.PAD_ACTIVE:
 		var pad_idx = evt.args[0]
 		var active = evt.args[1]
@@ -169,6 +212,27 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		var goal_idx = evt.args[0]
 		var active = evt.args[1]
 		goal_node_map[goal_idx].material_override.albedo_color = Color.GREEN_YELLOW if active else Color.YELLOW
+	elif evt.type == CoreGameplay.EventType.POSITION_EXCHANGE:
+		var from_type = evt.args[0]
+		var from_idx = evt.args[1]
+		var from_pos = evt.args[2]
+		var to_type = evt.args[3]
+		var to_idx = evt.args[4]
+		var to_pos = evt.args[5]
+		var from_node = get_node3d_by_type_and_index(from_type, from_idx)
+		if from_node != null:
+			var to_node = get_node3d_by_type_and_index(to_type, to_idx)
+			if to_node != null:
+				var cmd_ex := CmdPosExchange.new()
+				cmd_ex.from_type = from_type
+				cmd_ex.from_idx = from_idx
+				cmd_ex.from_pos = from_pos
+				cmd_ex.to_type = to_type
+				cmd_ex.to_idx = to_idx
+				cmd_ex.to_pos = to_pos
+				cmd_ex.current_time = 0.0
+				cmd_ex.total_time = 0.05
+				append_cmd(cmd_ex)
 	elif evt.type == CoreGameplay.EventType.KILL:
 		var kill_type = evt.args[0]
 		var kill_idx = evt.args[1]
@@ -186,6 +250,13 @@ func trigger_win_process():
 	won.win_base_ticks = Time.get_ticks_usec()
 	won.win_camera_base_pos = main_camera.position
 	
+func append_cmd(cmd):
+	assert(pending_cmd == null)
+	if processing_cmd == null:
+		processing_cmd = cmd
+	elif pending_cmd == null:
+		pending_cmd = cmd
+	
 func process_win():
 	if won == null:
 		return
@@ -199,22 +270,87 @@ func process_win():
 	var ly := current_game_instance.level_data.range.position.y
 	var lw := current_game_instance.level_data.range.size.x
 	var lh := current_game_instance.level_data.range.size.y
-	var focus_pos := Vector3(lx + 0.5 * lw, 0.0, -(ly + 0.5 * lh))
+	var focus_pos := Vector3(lx + 0.5 * lw, 0.0, -(ly + CAMERA_FOCUS_POSITION_Y_RATIO * lh))
 	main_camera.look_at(focus_pos)
+	
+func get_node3d_by_type_and_index(type: int, idx: int) -> Node3D:
+	if type == 1:
+		if character_node_map.has(idx):
+			return character_node_map[idx]
+	if type == 2:
+		if box_node_map.has(idx):
+			return box_node_map[idx]
+	return null
+
+func process_move_entry(entry: MoveEntry, ratio: float):
+	var target_node_3d := get_node3d_by_type_and_index(entry.type, entry.idx)
+	if target_node_3d != null:
+		var actual_ratio = 1 - pow(1 - ratio, 3)
+		target_node_3d.position = lerp(entry.from, entry.to, actual_ratio)
+	
+func process_single_cmd(cmd: Variant, dt: float) -> float:
+	cmd.current_time += dt
+	if cmd is CmdNormalMove:
+		var cmd_move = cmd as CmdNormalMove
+		var ratio = min(1.0, cmd.current_time / cmd.total_time)
+		for passive in cmd_move.move_entries:
+			process_move_entry(passive, ratio)
+	elif cmd is CmdPosExchange:
+		var cmd_ex = cmd as CmdPosExchange
+		var from_node := get_node3d_by_type_and_index(cmd_ex.from_type, cmd_ex.from_idx)
+		if from_node != null:
+			var to_node := get_node3d_by_type_and_index(cmd_ex.to_type, cmd_ex.to_idx)
+			if to_node != null:
+				from_node.position = grid_to_world(cmd_ex.from_pos)
+				to_node.position = grid_to_world(cmd_ex.to_pos)
+				var vfx_proto: PackedScene = load(AssetPathConfig.exchange_effect_packedscene_path())
+				var vfx_inst := vfx_proto.instantiate() as ExchangeEffect
+				vfx_inst.name = "EXCHANGE_EFFECT"
+				vfx_inst.setup(1.0, from_node.position + Vector3.UP * 0.5, to_node.position + Vector3.UP * 0.5)
+				add_child(vfx_inst)
+	return cmd.current_time - cmd.total_time
+
+func process_cmds(dt: float) -> void:
+	if processing_cmd != null:
+		var pdt = dt
+		if pending_cmd != null:
+			pdt = pdt * FAST_FORWARD_DELTA_TIME_FACTOR
+		var overflow_time := process_single_cmd(processing_cmd, pdt)
+		if overflow_time > 0.0:
+			processing_cmd = pending_cmd
+			if processing_cmd != null:
+				processing_cmd.current_time = overflow_time / FAST_FORWARD_DELTA_TIME_FACTOR
+			pending_cmd = null
+				
+func prepare_input_queue_process():
+	waiting_move_entries = []
+	
+func post_handle_input_queue_process():
+	player_input_queue.clear()
+	if len(waiting_move_entries) > 0:
+		var cmd_move := CmdNormalMove.new()
+		cmd_move.current_time = 0.0
+		cmd_move.total_time = 0.2
+		cmd_move.move_entries = waiting_move_entries
+		append_cmd(cmd_move)
 
 func _process(delta: float) -> void:
 	if current_game_instance == null:
 		return
+	prepare_input_queue_process()
 	for ipt in player_input_queue:
 		core_gameplay_event_queue.clear()
 		CoreGameplay.core_gameplay_handle_input(ipt, current_game_instance, core_gameplay_event_queue)
 		for evt in core_gameplay_event_queue:
 			handle_core_gameplay_event(evt)
-	player_input_queue.clear()
+	post_handle_input_queue_process()
+	process_cmds(delta)
 	process_win()
 	
 func _input(evt: InputEvent):
 	if current_game_instance == null or won:
+		return
+	if pending_cmd != null:
 		return
 	if evt is InputEventKey:
 		var evt_key: InputEventKey = evt as InputEventKey

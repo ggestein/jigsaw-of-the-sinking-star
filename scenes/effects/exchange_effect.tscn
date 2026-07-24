@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://dgihgt6u8os5j"]
+
+[ext_resource type="Script" uid="uid://ceaiah1xcga4q" path="res://scripts/scene_scripts/exchange_effect.gd" id="1_12s16"]
+
+[sub_resource type="Curve" id="Curve_oytlt"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_12s16"]
+curve = SubResource("Curve_oytlt")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_se8m8"]
+emission_shape = 3
+emission_box_extents = Vector3(10, 0.2, 0.2)
+angle_min = -206.99998
+angle_max = 275.2
+use_rotation_3d = true
+rotation_3d_min = Vector3(0, 0, -180)
+rotation_3d_max = Vector3(0, 0, 180)
+spread = 36.841
+gravity = Vector3(0, 3, 0)
+scale_min = 0.049999997
+scale_max = 0.099999994
+color = Color(0.060000002, 1, 1, 1)
+alpha_curve = SubResource("CurveTexture_12s16")
+
+[sub_resource type="QuadMesh" id="QuadMesh_y3kor"]
+
+[node name="ExchangeEffect" type="Node3D" unique_id=1827276645]
+script = ExtResource("1_12s16")
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="." unique_id=1668404436]
+emitting = false
+amount = 6
+lifetime = 0.46
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_se8m8")
+draw_pass_1 = SubResource("QuadMesh_y3kor")

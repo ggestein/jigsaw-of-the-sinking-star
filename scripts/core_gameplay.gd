@@ -42,6 +42,7 @@ class GameInstance:
 enum EventType {
 	REWINDED, RESET, SWITCH,
 	CHAR_MOVE, CHAR_ROTATE, BOX_MOVE, CHAR_BLOCKED, PAD_ACTIVE, DOOR_UNLOCK, GOAL_ACTIVE,
+	POSITION_EXCHANGE,
 	KILL, WIN
 }
 class Event:
@@ -132,6 +133,12 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		move_vec = Vector2i(-1, 0)
 		next_face = 3
 	# character movement
+	var pos_exchange_from_type := -1
+	var pos_exchange_from_idx := -1
+	var pos_exchange_from_pos := Vector2i.ZERO
+	var pos_exchange_to_type := -1
+	var pos_exchange_to_idx := -1
+	var pos_exchange_to_pos := Vector2i.ZERO
 	var passive_moves = []
 	for idx in range(0, len(state.characters)):
 		var ch := state.characters[idx]
@@ -187,6 +194,19 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 						chr_move_vec = Vector2i.ZERO
 						passive_moves.append([1, idx, next_check_pos])
 						passive_moves.append([movable_info[0], movable_info[1], ch.inst_position])
+						pos_exchange_from_type = 1
+						pos_exchange_from_idx = idx
+						pos_exchange_from_pos = next_check_pos
+						pos_exchange_to_type = movable_info[0]
+						pos_exchange_to_idx = movable_info[1]
+						pos_exchange_to_pos = ch.inst_position
+						var exchange_evt = Event.new()
+						exchange_evt.type = EventType.POSITION_EXCHANGE
+						exchange_evt.args = [
+							pos_exchange_from_type, pos_exchange_from_idx, pos_exchange_from_pos,
+							pos_exchange_to_type, pos_exchange_to_idx, pos_exchange_to_pos,
+						]
+						events.append(exchange_evt)
 					else:
 						has_next = true
 						next_check_pos = next_check_pos + chr_move_vec
@@ -218,6 +238,10 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 	next_state.goals_active = calculate_goals_active(level_data, next_state)
 	# move events, check and emit
 	for chr_idx in range(0, len(next_state.characters)):
+		if pos_exchange_from_type == 1 and pos_exchange_from_idx == chr_idx:
+			continue
+		if pos_exchange_to_type == 1 and pos_exchange_to_idx == chr_idx:
+			continue
 		var prev_pos := state.characters[chr_idx].inst_position
 		var new_pos := next_state.characters[chr_idx].inst_position
 		if new_pos != prev_pos:
@@ -233,6 +257,10 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 			evt.args = [chr_idx, prev_face, new_face]
 			events.append(evt)
 	for box_idx in range(0, len(next_state.boxes)):
+		if pos_exchange_from_type == 2 and pos_exchange_from_idx == box_idx:
+			continue
+		if pos_exchange_to_type == 2 and pos_exchange_to_idx == box_idx:
+			continue
 		var prev_pos := state.boxes[box_idx].position
 		var new_pos := next_state.boxes[box_idx].position
 		if new_pos != prev_pos:
