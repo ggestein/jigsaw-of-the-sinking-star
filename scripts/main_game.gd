@@ -172,7 +172,31 @@ static func face_to_rotation(face: int) -> Vector3:
 	elif face == 2:
 		actual_face = 0
 	return Vector3(0.0, actual_face * PI * 0.5, 0.0)
-	
+
+func force_refresh():
+	processing_cmd = null
+	pending_cmd = null
+	var current_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
+	for chr_idx in character_node_map:
+		var node := character_node_map[chr_idx]
+		var chr_inst := current_state.characters[chr_idx]
+		node.position = grid_to_world(chr_inst.inst_position)
+		node.rotation = face_to_rotation(chr_inst.inst_face)
+	for box_idx in box_node_map:
+		var node := box_node_map[box_idx]
+		var box_inst := current_state.boxes[box_idx]
+		node.position = grid_to_world(box_inst.position)
+	for pad_idx in pad_node_map:
+		var node := pad_node_map[pad_idx]
+		node.visible = not current_state.pads_active[pad_idx]
+	for door_idx in door_node_map:
+		var node := door_node_map[door_idx]
+		node.visible = not current_state.doors_unlock[door_idx]
+	for goal_idx in goal_node_map:
+		var node := goal_node_map[goal_idx]
+		var active := current_state.goals_active[goal_idx]
+		node.material_override.albedo_color = Color.GREEN_YELLOW if active else Color.YELLOW
+
 func handle_core_gameplay_event(evt: CoreGameplay.Event):
 	if evt.type == CoreGameplay.EventType.CHAR_MOVE:
 		var chr_idx = evt.args[0]
@@ -240,6 +264,10 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 			character_node_map[kill_idx].visible = false
 		elif kill_type == 2:
 			box_node_map[kill_idx].visible = false
+	elif evt.type == CoreGameplay.EventType.REWINDED:
+		force_refresh()
+	elif evt.type == CoreGameplay.EventType.RESET:
+		force_refresh()
 	elif evt.type == CoreGameplay.EventType.WIN:
 		trigger_win_process()
 		
