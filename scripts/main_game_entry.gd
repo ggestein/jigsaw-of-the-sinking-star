@@ -96,6 +96,7 @@ func process_level_loading():
 		loaded_level_config_index = to_load_level_config_index
 		to_load_level_config_index = -1
 		current_level_base_time = Time.get_ticks_usec()
+		cover_panel.visible = true
 	
 func _process(delta: float) -> void:
 	if next_select_level_config_index != -1:
@@ -125,6 +126,8 @@ func _input(event: InputEvent) -> void:
 			else:
 				if event_key.keycode == KEY_TAB:
 					current_select_level_config_index = loaded_level_config_index
+					panel_cursor_target_position = calculate_panel_cursor_position(current_select_level_config_index)
+					panel_cursor.position = panel_cursor_target_position
 					level_panel.visible = true
 				else:
 					current_main_game.main_game_input(event)
