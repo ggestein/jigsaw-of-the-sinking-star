@@ -205,8 +205,9 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 					if movable_info[0] != 0:
 						passive_moves.append([movable_info[0], movable_info[1], ch.inst_position])
 				else:
+					if chr_move_vec != Vector2i.ZERO:
+						character_block_rotate(idx, ch, next_face, events)
 					chr_move_vec = Vector2i.ZERO
-					character_block_rotate(idx, ch, next_face, events)
 			# mage ability
 			if level_data.character_data[idx] == CharacterClass.MAGE:
 				var has_next = true

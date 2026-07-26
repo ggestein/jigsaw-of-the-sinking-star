@@ -400,9 +400,9 @@ func _process(delta: float) -> void:
 func _input(evt: InputEvent):
 	if current_game_instance == null or won:
 		return
-	if pending_cmd != null:
-		return
 	if evt is InputEventKey:
+		if pending_cmd != null:
+			return
 		var evt_key: InputEventKey = evt as InputEventKey
 		if evt_key.is_pressed() and not evt_key.is_echo():
 			if evt_key.keycode == KEY_W:
