@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://djm6pc5q5id1n"]
+
+[ext_resource type="Script" uid="uid://lxx536528ys2" path="res://scripts/main_game_entry.gd" id="1_rukdc"]
+
+[sub_resource type="Theme" id="Theme_y3kor"]
+default_font_size = 32
+Label/colors/font_color = Color(0.308, 0.33110002, 0.35, 1)
+
+[node name="MainGameEntry" type="Node" unique_id=1610191981]
+script = ExtResource("1_rukdc")
+panel_bg_color = Color(0.30588236, 0.32941177, 0.34901962, 1)
+panel_option_bg_color = Color(0.7392, 0.86592, 0.88, 1)
+panel_cursor_color = Color(0.63, 0.1197, 0.1197, 1)
+panel_top_padding = 10.0
+panel_left_padding = 10.0
+panel_option_stride = 60.0
+panel_option_height = 50.0
+panel_cursor_size = 30.0
+
+[node name="Cover" type="ColorRect" parent="." unique_id=1151624479]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="LevelPanel" type="ColorRect" parent="." unique_id=35728174]
+visible = false
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 430.0
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0, 0.5)
+theme = SubResource("Theme_y3kor")
+color = Color(0.30588236, 0.32941177, 0.34901962, 1)

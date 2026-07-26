@@ -75,3 +75,7 @@ func setup_buttons():
 func _ready() -> void:
 	setup_all_level_configs()
 	setup_buttons()
+
+func _input(event: InputEvent) -> void:
+	if current_main_game != null:
+		current_main_game.main_game_input(event)

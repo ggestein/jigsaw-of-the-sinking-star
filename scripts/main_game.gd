@@ -397,7 +397,12 @@ func _process(delta: float) -> void:
 	process_cmds(delta)
 	process_win()
 	
-func _input(evt: InputEvent):
+func win_ticks() -> int:
+	if won != null:
+		return Time.get_ticks_usec() - won.win_base_ticks
+	return -1
+	
+func main_game_input(evt: InputEvent):
 	if current_game_instance == null or won:
 		return
 	if evt is InputEventKey:
