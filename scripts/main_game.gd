@@ -29,6 +29,12 @@ class CmdPosExchange:
 	var to_type: int
 	var to_idx: int
 	var to_pos: Vector2i
+class CmdCharacterBlockedMove:
+	var current_time: float
+	var total_time: float
+	var chr_idx: int
+	var from_pos: Vector3
+	var to_pos: Vector3
 
 var current_game_instance: CoreGameplay.GameInstance
 var obstacle_node_map: Dictionary[int, Node3D]
@@ -180,11 +186,13 @@ func force_refresh():
 	for chr_idx in character_node_map:
 		var node := character_node_map[chr_idx]
 		var chr_inst := current_state.characters[chr_idx]
+		node.visible = not chr_inst.killed
 		node.position = grid_to_world(chr_inst.inst_position)
 		node.rotation = face_to_rotation(chr_inst.inst_face)
 	for box_idx in box_node_map:
 		var node := box_node_map[box_idx]
 		var box_inst := current_state.boxes[box_idx]
+		node.visible = not box_inst.killed
 		node.position = grid_to_world(box_inst.position)
 	for pad_idx in pad_node_map:
 		var node := pad_node_map[pad_idx]
@@ -209,6 +217,14 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		new_move_entry.from = grid_to_world(prev_pos)
 		new_move_entry.to = grid_to_world(new_pos)
 		waiting_move_entries.append(new_move_entry)
+	elif evt.type == CoreGameplay.EventType.CHAR_BLOCKED:
+		var blocked_cmd := CmdCharacterBlockedMove.new()
+		blocked_cmd.current_time = 0
+		blocked_cmd.total_time = 0.2
+		blocked_cmd.chr_idx = evt.args[0]
+		blocked_cmd.from_pos = grid_to_world(evt.args[1])
+		blocked_cmd.to_pos = grid_to_world(evt.args[2])
+		append_cmd(blocked_cmd)
 	elif evt.type == CoreGameplay.EventType.CHAR_ROTATE:
 		var chr_idx = evt.args[0]
 		var new_face = evt.args[2]
@@ -336,6 +352,12 @@ func process_single_cmd(cmd: Variant, dt: float) -> float:
 				vfx_inst.name = "EXCHANGE_EFFECT"
 				vfx_inst.setup(1.0, from_node.position + Vector3.UP * 0.5, to_node.position + Vector3.UP * 0.5)
 				add_child(vfx_inst)
+	elif cmd is CmdCharacterBlockedMove:
+		var cmd_blocked = cmd as CmdCharacterBlockedMove
+		var node := character_node_map[cmd_blocked.chr_idx]
+		var ratio = min(1.0, cmd.current_time / cmd.total_time)
+		ratio = (0.25 - pow((ratio - 0.5), 2)) * 1.1
+		node.position = lerp(cmd_blocked.from_pos, cmd_blocked.to_pos, ratio)
 	return cmd.current_time - cmd.total_time
 
 func process_cmds(dt: float) -> void:

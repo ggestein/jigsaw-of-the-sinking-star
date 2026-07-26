@@ -54,6 +54,12 @@ static func normalize_state(level_data: LevelData, state: GameState):
 	state.doors_unlock = calculate_doors_active(level_data, state)
 	state.goals_active = calculate_goals_active(level_data, state)
 	
+static func emit_character_rotate_event(chr_idx: int, prev_face: int, face: int, events: Array[Event]):
+	var evt := Event.new()
+	evt.type = EventType.CHAR_ROTATE
+	evt.args = [chr_idx, prev_face, face]
+	events.append(evt)
+	
 static func create_new_game_instance(level_data: LevelData, initial_state: GameState) -> GameInstance:
 	var result := GameInstance.new()
 	result.level_data = level_data
@@ -61,6 +67,27 @@ static func create_new_game_instance(level_data: LevelData, initial_state: GameS
 	result.initial_state = initial_state
 	result.history_states.append(result.initial_state)
 	return result
+static func face_to_move_vec(face: int) -> Vector2i:
+	var move_vec := Vector2i.ZERO
+	if face == 0:
+		move_vec = Vector2i(0, 1)
+	elif face == 1:
+		move_vec = Vector2i(1, 0)
+	elif face == 2:
+		move_vec = Vector2i(0, -1)
+	elif face == 3:
+		move_vec = Vector2i(-1, 0)
+	return move_vec
+static func character_block_rotate(chr_idx: int, chr_inst: CharacterInstance, face: int, events: Array[Event]):
+	if chr_inst.inst_face != face:
+		var prev_face := chr_inst.inst_face
+		chr_inst.inst_face = face
+		emit_character_rotate_event(chr_idx, prev_face, face, events)
+	var evt := Event.new()
+	evt.type = EventType.CHAR_BLOCKED
+	var move_vec := face_to_move_vec(face)
+	evt.args = [chr_idx, chr_inst.inst_position, chr_inst.inst_position + move_vec]
+	events.append(evt)
 
 static func core_gameplay_handle_input(input: PlayerInput, game_inst: GameInstance, events: Array[Event]):
 	assert(len(game_inst.history_states) > 0)
@@ -118,20 +145,16 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 	next_state.current_character_index = state.current_character_index
 	next_state.characters = []
 	# input to direction
-	var move_vec := Vector2i.ZERO
 	var next_face := -1
 	if input == PlayerInput.MOVE_UP:
-		move_vec = Vector2i(0, 1)
 		next_face = 0
 	elif input == PlayerInput.MOVE_RIGHT:
-		move_vec = Vector2i(1, 0)
 		next_face = 1
 	elif input == PlayerInput.MOVE_DOWN:
-		move_vec = Vector2i(0, -1)
 		next_face = 2
 	elif input == PlayerInput.MOVE_LEFT:
-		move_vec = Vector2i(-1, 0)
 		next_face = 3
+	var move_vec := face_to_move_vec(next_face)
 	# character movement
 	var pos_exchange_from_type := -1
 	var pos_exchange_from_idx := -1
@@ -150,6 +173,7 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		var new_position := ch.inst_position + chr_move_vec
 		if chr_move_vec != Vector2i.ZERO and util_is_position_blocked(level_data, state, new_position):
 			chr_move_vec = Vector2i.ZERO
+			character_block_rotate(idx, ch, next_face, events)
 		# handle abilities
 		if state.current_character_index == idx:
 			# warrior ability
@@ -165,6 +189,7 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 						if util_is_position_blocked(level_data, state, next_check_pos):
 							passive_moves.clear() # Collide: no passive moves
 							chr_move_vec = Vector2i.ZERO # Collide: no active moves
+							character_block_rotate(idx, ch, next_face, events)
 							break
 						var movable_info = util_find_movable_in_position(state, next_check_pos)
 						if movable_info[0] != 0:
@@ -181,6 +206,7 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 						passive_moves.append([movable_info[0], movable_info[1], ch.inst_position])
 				else:
 					chr_move_vec = Vector2i.ZERO
+					character_block_rotate(idx, ch, next_face, events)
 			# mage ability
 			if level_data.character_data[idx] == CharacterClass.MAGE:
 				var has_next = true
@@ -251,11 +277,8 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 			events.append(evt)
 		var prev_face := state.characters[chr_idx].inst_face
 		var new_face := next_state.characters[chr_idx].inst_face
-		if new_pos != prev_pos:
-			var evt := Event.new()
-			evt.type = EventType.CHAR_ROTATE
-			evt.args = [chr_idx, prev_face, new_face]
-			events.append(evt)
+		if new_face != prev_face:
+			emit_character_rotate_event(chr_idx, prev_face, new_face, events)
 	for box_idx in range(0, len(next_state.boxes)):
 		if pos_exchange_from_type == 2 and pos_exchange_from_idx == box_idx:
 			continue
