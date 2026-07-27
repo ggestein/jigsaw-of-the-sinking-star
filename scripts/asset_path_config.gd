@@ -4,6 +4,7 @@ extends Object
 const CASTLE_BASE_PATH: StringName = "res://arts/kenney_castle_kit/"
 const CHARACTER_BASE_PATH: StringName = "res://arts/kenney_mini_characters/"
 const EFFECT_BASE_PATH: StringName = "res://scenes/effects/"
+const ENTITIES_BASE_PATH: StringName = "res://scenes/entities/"
 
 static func character_warrior_packedscene_path() -> StringName:
 	return CHARACTER_BASE_PATH + "character-male-b.glb"
@@ -19,3 +20,12 @@ static func box_packedscene_path() -> StringName:
 
 static func exchange_effect_packedscene_path() -> StringName:
 	return EFFECT_BASE_PATH + "exchange_effect.tscn"
+
+static func pad_packedscene_path() -> StringName:
+	return ENTITIES_BASE_PATH + "pad.tscn"
+
+static func goal_packedscene_path() -> StringName:
+	return ENTITIES_BASE_PATH + "goal.tscn"
+
+static func door_packedscene_path() -> StringName:
+	return ENTITIES_BASE_PATH + "door.tscn"

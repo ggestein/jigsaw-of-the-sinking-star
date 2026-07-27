@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://dvmitufjh1fsf"]
+
+[ext_resource type="Script" uid="uid://cjjssnokhp2b5" path="res://scripts/entities/goal.gd" id="1_c1763"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y3kor"]
+emission_enabled = true
+emission = Color(0, 1, 0.36666656, 1)
+emission_energy_multiplier = 0.78
+
+[sub_resource type="BoxMesh" id="BoxMesh_se8m8"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_y3kor"]
+
+[node name="Goal" type="Node3D" unique_id=3486556]
+script = ExtResource("1_c1763")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=525103265]
+transform = Transform3D(0.6, 0, 0, 0, 0.1, 0, 0, 0, 0.6, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_y3kor")
+mesh = SubResource("BoxMesh_se8m8")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1774952464]
+transform = Transform3D(0.42426407, 0, 0.42426407, 0, 0.1, 0, -0.42426407, 0, 0.42426407, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_y3kor")
+mesh = SubResource("BoxMesh_se8m8")
+
+[node name="ActiveMark" type="Node3D" parent="." unique_id=276236443]
+visible = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="ActiveMark" unique_id=223712617]
+transform = Transform3D(1, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0.475)
+material_override = SubResource("StandardMaterial3D_y3kor")
+mesh = SubResource("BoxMesh_y3kor")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="ActiveMark" unique_id=424748157]
+transform = Transform3D(1, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, -0.475)
+material_override = SubResource("StandardMaterial3D_y3kor")
+mesh = SubResource("BoxMesh_y3kor")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="ActiveMark" unique_id=58425374]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, -0.475, 0, 0)
+material_override = SubResource("StandardMaterial3D_y3kor")
+mesh = SubResource("BoxMesh_y3kor")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="ActiveMark" unique_id=42397917]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, 0.475, 0, 0)
+material_override = SubResource("StandardMaterial3D_y3kor")
+mesh = SubResource("BoxMesh_y3kor")

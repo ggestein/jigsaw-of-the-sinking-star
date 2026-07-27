@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://qlo2m5sevqxw"]
+
+[ext_resource type="Script" uid="uid://dgpp5unbin2aa" path="res://scripts/entities/door.gd" id="1_dn7cs"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_se8m8"]
+emission_enabled = true
+emission = Color(0.48190004, 0.17380002, 0.79, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_se8m8"]
+
+[node name="Door" type="Node3D" unique_id=1551931203]
+script = ExtResource("1_dn7cs")
+speed = 6.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=346792723]
+transform = Transform3D(1, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0.475)
+material_override = SubResource("StandardMaterial3D_se8m8")
+mesh = SubResource("BoxMesh_se8m8")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=922834070]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, 0.475, 0, 0)
+material_override = SubResource("StandardMaterial3D_se8m8")
+mesh = SubResource("BoxMesh_se8m8")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=2105647362]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 1, -0.475, 0, 0)
+material_override = SubResource("StandardMaterial3D_se8m8")
+mesh = SubResource("BoxMesh_se8m8")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=199039724]
+transform = Transform3D(1, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, -0.475)
+material_override = SubResource("StandardMaterial3D_se8m8")
+mesh = SubResource("BoxMesh_se8m8")
+
+[node name="MainBody" type="Node3D" parent="." unique_id=1452375036]
+
+[node name="Mesh" type="MeshInstance3D" parent="MainBody" unique_id=1529772611]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, -0.55, 0)
+material_override = SubResource("StandardMaterial3D_se8m8")
+mesh = SubResource("BoxMesh_se8m8")

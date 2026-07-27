@@ -40,9 +40,9 @@ var current_game_instance: CoreGameplay.GameInstance
 var obstacle_node_map: Dictionary[int, Node3D]
 var box_node_map: Dictionary[int, Node3D]
 var character_node_map: Dictionary[int, Node3D]
-var pad_node_map: Dictionary[int, Node3D]
-var door_node_map: Dictionary[int, Node3D]
-var goal_node_map: Dictionary[int, Node3D]
+var pad_node_map: Dictionary[int, Pad]
+var door_node_map: Dictionary[int, Door]
+var goal_node_map: Dictionary[int, Goal]
 var main_camera: Camera3D
 var player_input_queue: Array[CoreGameplay.PlayerInput] = []
 var core_gameplay_event_queue: Array[CoreGameplay.Event] = []
@@ -121,38 +121,31 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 	# setup pads
 	for pad_idx in range(0, len(game_instance_args.level_data.pads)):
 		var pad_pos := game_instance_args.level_data.pads[pad_idx]
-		var pad_inst := MeshInstance3D.new()
-		pad_inst.mesh = BoxMesh.new()
-		pad_inst.material_override = StandardMaterial3D.new()
-		pad_inst.material_override.albedo_color = Color.GREEN
+		var pad_proto: PackedScene = load(AssetPathConfig.pad_packedscene_path())
+		var pad_inst := pad_proto.instantiate()
 		pad_inst.name = "PAD_%d" % pad_idx
 		add_child(pad_inst)
-		pad_inst.position = grid_to_world(pad_pos) - Vector3.UP * 0.4
-		pad_inst.scale = Vector3(0.98, 1.0, 0.98)
+		pad_inst.position = grid_to_world(pad_pos)
 		pad_node_map[pad_idx] = pad_inst
 	# setup doors
 	for door_idx in range(0, len(game_instance_args.level_data.doors)):
 		var door_pos := game_instance_args.level_data.doors[door_idx].position
-		var door_inst := MeshInstance3D.new()
-		door_inst.mesh = BoxMesh.new()
-		door_inst.material_override = StandardMaterial3D.new()
-		door_inst.material_override.albedo_color = Color.PURPLE
+		var door_proto: PackedScene = load(AssetPathConfig.door_packedscene_path())
+		var door_inst := door_proto.instantiate()
 		door_inst.name = "DOOR_%d" % door_idx
 		add_child(door_inst)
-		door_inst.position = grid_to_world(door_pos) + Vector3.UP * 0.5
-		door_inst.scale = Vector3(0.98, 1.0, 0.98)
+		door_inst.position = grid_to_world(door_pos)
+		var actual_door_inst := door_inst as Door
+		actual_door_inst.set_unlock_im(game_instance_args.initial_state.doors_unlock[door_idx])
 		door_node_map[door_idx] = door_inst
 	# setup goals
 	for goal_idx in range(0, len(game_instance_args.level_data.goals)):
 		var goal_pos := game_instance_args.level_data.goals[goal_idx]
-		var goal_inst := MeshInstance3D.new()
-		goal_inst.mesh = BoxMesh.new()
-		goal_inst.material_override = StandardMaterial3D.new()
-		goal_inst.material_override.albedo_color = Color.YELLOW
-		goal_inst.name = "GOAL_%d" % goal_pos
+		var goal_proto: PackedScene = load(AssetPathConfig.goal_packedscene_path())
+		var goal_inst := goal_proto.instantiate()
+		goal_inst.name = "GOAL_%d" % goal_idx
 		add_child(goal_inst)
-		goal_inst.position = grid_to_world(goal_pos) - Vector3.UP * 0.4
-		goal_inst.scale = Vector3(0.98, 1.0, 0.98)
+		goal_inst.position = grid_to_world(goal_pos)
 		goal_node_map[goal_idx] = goal_inst
 	# setup camera
 	main_camera = Camera3D.new()
@@ -196,14 +189,14 @@ func force_refresh():
 		node.position = grid_to_world(box_inst.position)
 	for pad_idx in pad_node_map:
 		var node := pad_node_map[pad_idx]
-		node.visible = not current_state.pads_active[pad_idx]
+		node.set_pressed_im(current_state.pads_active[pad_idx])
 	for door_idx in door_node_map:
 		var node := door_node_map[door_idx]
-		node.visible = not current_state.doors_unlock[door_idx]
+		node.set_unlock_im(current_state.doors_unlock[door_idx])
 	for goal_idx in goal_node_map:
 		var node := goal_node_map[goal_idx]
 		var active := current_state.goals_active[goal_idx]
-		node.material_override.albedo_color = Color.GREEN_YELLOW if active else Color.YELLOW
+		node.set_active(active)
 
 func handle_core_gameplay_event(evt: CoreGameplay.Event):
 	if evt.type == CoreGameplay.EventType.CHAR_MOVE:
@@ -243,15 +236,15 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 	elif evt.type == CoreGameplay.EventType.PAD_ACTIVE:
 		var pad_idx = evt.args[0]
 		var active = evt.args[1]
-		pad_node_map[pad_idx].visible = not active
+		pad_node_map[pad_idx].set_pressed(active)
 	elif evt.type == CoreGameplay.EventType.DOOR_UNLOCK:
 		var door_idx = evt.args[0]
 		var unlock = evt.args[1]
-		door_node_map[door_idx].visible = not unlock
+		door_node_map[door_idx].set_unlock(unlock)
 	elif evt.type == CoreGameplay.EventType.GOAL_ACTIVE:
 		var goal_idx = evt.args[0]
 		var active = evt.args[1]
-		goal_node_map[goal_idx].material_override.albedo_color = Color.GREEN_YELLOW if active else Color.YELLOW
+		goal_node_map[goal_idx].set_active(active)
 	elif evt.type == CoreGameplay.EventType.POSITION_EXCHANGE:
 		var from_type = evt.args[0]
 		var from_idx = evt.args[1]
