@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://o6lh2oaipcvr"]
+
+[ext_resource type="Shader" uid="uid://4lan4468d227" path="res://shaders/player_cursor.gdshader" id="1_5bp7b"]
+[ext_resource type="Script" uid="uid://bwxgfg0pf3cno" path="res://scripts/entities/player_cursor.gd" id="1_cqhv4"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y3kor"]
+render_priority = 0
+shader = ExtResource("1_5bp7b")
+shader_parameter/emission_color = Vector3(0, 0, 0)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_se8m8"]
+
+[node name="PlayerCursor" type="Node3D" unique_id=12164034]
+script = ExtResource("1_cqhv4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1115126406]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+material_override = SubResource("ShaderMaterial_y3kor")
+mesh = SubResource("PlaneMesh_se8m8")

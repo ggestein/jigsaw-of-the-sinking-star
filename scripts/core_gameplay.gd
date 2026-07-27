@@ -104,10 +104,12 @@ static func core_gameplay_handle_input(input: PlayerInput, game_inst: GameInstan
 		events.append(evt)
 	elif input == PlayerInput.SWITCH:
 		var cur_state := game_inst.history_states[len(game_inst.history_states) - 1]
-		cur_state.current_character_index = (cur_state.current_character_index + 1) % len(cur_state.characters)
+		for i in range(0, len(game_inst.level_data.character_data)):
+			cur_state.current_character_index = (cur_state.current_character_index + 1) % len(cur_state.characters)
+			if not cur_state.characters[cur_state.current_character_index].killed:
+				break
 		var evt := Event.new()
 		evt.type = EventType.SWITCH
-		evt.args = [cur_state.current_character_index]
 		events.append(evt)
 	else:
 		var cur_state := game_inst.history_states[len(game_inst.history_states) - 1]

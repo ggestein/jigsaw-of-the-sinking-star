@@ -33,3 +33,14 @@ grow_vertical = 2
 pivot_offset_ratio = Vector2(0, 0.5)
 theme = SubResource("Theme_y3kor")
 color = Color(0.30588236, 0.32941177, 0.34901962, 1)
+
+[node name="EndingLabel" type="Label" parent="." unique_id=250732299]
+visible = false
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 726.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 120
+text = "Thank You for Playing"
+horizontal_alignment = 1
+vertical_alignment = 1

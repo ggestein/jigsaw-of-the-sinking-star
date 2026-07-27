@@ -44,6 +44,7 @@ var pad_node_map: Dictionary[int, Pad]
 var door_node_map: Dictionary[int, Door]
 var goal_node_map: Dictionary[int, Goal]
 var main_camera: Camera3D
+var current_player_cursor: PlayerCursor
 var player_input_queue: Array[CoreGameplay.PlayerInput] = []
 var core_gameplay_event_queue: Array[CoreGameplay.Event] = []
 var processing_cmd: Variant = null
@@ -161,6 +162,11 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 	main_camera.position = camera_pos
 	main_camera.look_at(focus_pos)
 	won = null
+	if current_player_cursor == null:
+		var player_cursor: PackedScene = load(AssetPathConfig.player_cursor_packedscene_path())
+		current_player_cursor = player_cursor.instantiate()
+		add_child(current_player_cursor)
+	refresh_cursor_color()
 
 static func grid_to_world(grid_pos: Vector2i) -> Vector3:
 	return Vector3(grid_pos.x + 0.5, 0.0, -grid_pos.y - 0.5)
@@ -171,7 +177,11 @@ static func face_to_rotation(face: int) -> Vector3:
 	elif face == 2:
 		actual_face = 0
 	return Vector3(0.0, actual_face * PI * 0.5, 0.0)
-
+func refresh_cursor_color():
+	var current_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
+	var current_idx := current_state.current_character_index
+	var cls := current_game_instance.level_data.character_data[current_idx]
+	current_player_cursor.set_character_class(cls)
 func force_refresh():
 	processing_cmd = null
 	pending_cmd = null
@@ -197,6 +207,7 @@ func force_refresh():
 		var node := goal_node_map[goal_idx]
 		var active := current_state.goals_active[goal_idx]
 		node.set_active(active)
+	refresh_cursor_color()
 
 func handle_core_gameplay_event(evt: CoreGameplay.Event):
 	if evt.type == CoreGameplay.EventType.CHAR_MOVE:
@@ -273,6 +284,8 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 			character_node_map[kill_idx].visible = false
 		elif kill_type == 2:
 			box_node_map[kill_idx].visible = false
+	elif evt.type == CoreGameplay.EventType.SWITCH:
+		refresh_cursor_color()
 	elif evt.type == CoreGameplay.EventType.REWINDED:
 		force_refresh()
 	elif evt.type == CoreGameplay.EventType.RESET:
@@ -377,6 +390,11 @@ func post_handle_input_queue_process():
 		cmd_move.move_entries = waiting_move_entries
 		append_cmd(cmd_move)
 
+func process_player_cursor():
+	if current_player_cursor != null:
+		var current_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
+		current_player_cursor.position = character_node_map[current_state.current_character_index].position
+
 func _process(delta: float) -> void:
 	if current_game_instance == null:
 		return
@@ -388,6 +406,7 @@ func _process(delta: float) -> void:
 			handle_core_gameplay_event(evt)
 	post_handle_input_queue_process()
 	process_cmds(delta)
+	process_player_cursor()
 	process_win()
 	
 func win_ticks() -> int:

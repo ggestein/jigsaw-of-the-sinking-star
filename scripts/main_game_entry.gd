@@ -11,6 +11,7 @@ extends Node
 
 @onready var level_panel: ColorRect = $"LevelPanel"
 @onready var cover_panel: ColorRect = $"Cover"
+@onready var ending_label: Label = $"EndingLabel"
 
 var all_level_config_entries: Array[MainGameLevelConfig.LevelConfigEntry]
 var current_select_level_config_index := 0
@@ -75,12 +76,16 @@ func process_level_transfer():
 	else:
 		var panel_alpha_ticks := win_ticks - 1200000
 		if panel_alpha_ticks > 0:
-			if not cover_panel.visible:
+			var is_last := loaded_level_config_index >= len(all_level_config_entries) - 1
+			if not is_last and not cover_panel.visible:
 				cover_panel.visible = true
-			var alpha: float = min(1.0, panel_alpha_ticks / 1000000.0)
-			cover_panel.color.a = max(0.0, alpha)
+			var alpha: float = 0.0 if is_last else  min(1.0, panel_alpha_ticks / 1000000.0)
+			cover_panel.color.a = alpha
 			if panel_alpha_ticks > 1300000:
-				to_load_level_config_index = (loaded_level_config_index + 1) % len(all_level_config_entries)
+				if loaded_level_config_index < len(all_level_config_entries) - 1:
+					to_load_level_config_index = loaded_level_config_index + 1
+				else:
+					ending_label.visible = true
 func process_level_loading():
 	if to_load_level_config_index != -1 and to_load_level_config_index != loaded_level_config_index:
 		if current_main_game != null:
@@ -97,6 +102,7 @@ func process_level_loading():
 		to_load_level_config_index = -1
 		current_level_base_time = Time.get_ticks_usec()
 		cover_panel.visible = true
+		ending_label.visible = false
 	
 func _process(delta: float) -> void:
 	if next_select_level_config_index != -1:
