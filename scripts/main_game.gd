@@ -45,6 +45,7 @@ var door_node_map: Dictionary[int, Door]
 var goal_node_map: Dictionary[int, Goal]
 var main_camera: Camera3D
 var current_player_cursor: PlayerCursor
+var ground_grid: GroundGrid
 var player_input_queue: Array[CoreGameplay.PlayerInput] = []
 var core_gameplay_event_queue: Array[CoreGameplay.Event] = []
 var processing_cmd: Variant = null
@@ -78,7 +79,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 				cube_inst.position.x = x + 0.5
 				cube_inst.position.y = -0.5
 				cube_inst.position.z = -(y + 0.5)
-				cube_inst.scale = Vector3(0.98, 1.0, 0.98)
+				cube_inst.scale = Vector3(1.0, 1.0, 1.0)
 		for obs_idx in range(0, len(current_game_instance.level_data.obstacles)):
 			var obs := current_game_instance.level_data.obstacles[obs_idx]
 			var cube_inst := MeshInstance3D.new()
@@ -88,7 +89,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 			cube_inst.position.x = obs.x + 0.5
 			cube_inst.position.y = 0.5
 			cube_inst.position.z = -(obs.y + 0.5)
-			cube_inst.scale = Vector3(0.98, 1.0, 0.98)
+			cube_inst.scale = Vector3(1.0, 1.0, 1.0)
 			obstacle_node_map[obs_idx] = cube_inst
 		var dir_light = DirectionalLight3D.new()
 		add_child(dir_light)
@@ -167,6 +168,9 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 		current_player_cursor = player_cursor.instantiate()
 		add_child(current_player_cursor)
 	refresh_cursor_color()
+	ground_grid = (load(AssetPathConfig.ground_grid_packedscene_path()) as PackedScene).instantiate()
+	add_child(ground_grid)
+	ground_grid.setup(current_game_instance.level_data.range.size);
 
 static func grid_to_world(grid_pos: Vector2i) -> Vector3:
 	return Vector3(grid_pos.x + 0.5, 0.0, -grid_pos.y - 0.5)
@@ -301,7 +305,8 @@ func trigger_win_process():
 	won.win_camera_base_pos = main_camera.position
 	
 func append_cmd(cmd):
-	assert(pending_cmd == null)
+	if pending_cmd != null:
+		return
 	if processing_cmd == null:
 		processing_cmd = cmd
 	elif pending_cmd == null:
@@ -448,5 +453,7 @@ func clearup():
 	obstacle_node_map.clear()
 	box_node_map.clear()
 	character_node_map.clear()
+	current_player_cursor = null
+	ground_grid = null
 	main_camera = null
 	player_input_queue = []

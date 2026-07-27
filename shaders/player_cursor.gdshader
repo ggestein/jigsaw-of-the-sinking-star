@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode blend_mix, depth_draw_always, cull_back;
+render_mode blend_mix, cull_back;
 
 uniform vec3 emission_color = vec3(-1.0, 2.0, -1.0);
 

@@ -35,3 +35,6 @@ static func door_packedscene_path() -> StringName:
 
 static func player_cursor_packedscene_path() -> StringName:
 	return ENTITIES_BASE_PATH + "player_cursor.tscn"
+
+static func ground_grid_packedscene_path() -> StringName:
+	return ENTITIES_BASE_PATH + "ground_grid.tscn"

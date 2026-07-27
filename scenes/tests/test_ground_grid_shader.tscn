@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://ik8udfv8jc0x"]
+
+[ext_resource type="Shader" uid="uid://q07sni4nwkxp" path="res://shaders/ground_grid.gdshader" id="1_i7fuh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i7fuh"]
+render_priority = 0
+shader = ExtResource("1_i7fuh")
+shader_parameter/line_color = Vector3(0, 0, 0)
+shader_parameter/line_width = 1.03
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_sk5bl"]
+material = SubResource("ShaderMaterial_i7fuh")
+size = Vector2(3.08, 1.835)
+
+[node name="TestGroundGridShader" type="MeshInstance3D" unique_id=1939638058]
+transform = Transform3D(4.305, 0, 0, 0, 1, 0, 0, 0, 3.675, -0.84, 0, 0)
+mesh = SubResource("PlaneMesh_sk5bl")

@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bx2epjkji5ytj"]
+
+[ext_resource type="Script" uid="uid://dqwlxegvw1gud" path="res://scripts/entities/ground_grid.gd" id="1_puy4m"]
+[ext_resource type="Shader" uid="uid://q07sni4nwkxp" path="res://shaders/ground_grid.gdshader" id="2_sxsfv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_puy4m"]
+render_priority = 0
+shader = ExtResource("2_sxsfv")
+shader_parameter/line_color = Vector3(0.3, 0.3, 0.3)
+shader_parameter/line_width = 1.02
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_se8m8"]
+material = SubResource("ShaderMaterial_puy4m")
+size = Vector2(1, 1)
+
+[node name="GroundGrid" type="Node3D" unique_id=2087893036]
+script = ExtResource("1_puy4m")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=1274094075]
+mesh = SubResource("PlaneMesh_se8m8")
