@@ -2,20 +2,10 @@
 
 [ext_resource type="Script" uid="uid://cbwqsywgkqclq" path="res://scripts/entities/pad.gd" id="1_2nkda"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_382rk"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2nkda"]
-noise = SubResource("FastNoiseLite_382rk")
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_j2u2j"]
-noise = SubResource("FastNoiseLite_382rk")
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2nkda"]
-albedo_color = Color(0.76, 0.71034664, 0.3344, 1)
-roughness_texture = SubResource("NoiseTexture2D_j2u2j")
-normal_enabled = true
+emission_enabled = true
+emission = Color(0.8076375, 0.6849876, 0, 1)
 normal_scale = 0.2
-normal_texture = SubResource("NoiseTexture2D_2nkda")
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_se8m8"]
 
@@ -23,6 +13,7 @@ normal_texture = SubResource("NoiseTexture2D_2nkda")
 
 [node name="Pad" type="Node3D" unique_id=512721982]
 script = ExtResource("1_2nkda")
+pressed_position = -0.08
 move_speed = 1.0
 
 [node name="MainButton" type="Node3D" parent="." unique_id=87388952]

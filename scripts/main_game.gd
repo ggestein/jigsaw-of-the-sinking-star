@@ -358,6 +358,10 @@ func process_single_cmd(cmd: Variant, dt: float) -> float:
 				vfx_inst.name = "EXCHANGE_EFFECT"
 				vfx_inst.setup(1.0, from_node.position + Vector3.UP * 0.5, to_node.position + Vector3.UP * 0.5)
 				add_child(vfx_inst)
+				vfx_proto = load(AssetPathConfig.trans_effect_packedscene_path())
+				var trans_vfx_inst: Node3D = vfx_proto.instantiate()
+				trans_vfx_inst.position = from_node.position
+				add_child(trans_vfx_inst)
 	elif cmd is CmdCharacterBlockedMove:
 		var cmd_blocked = cmd as CmdCharacterBlockedMove
 		var node := character_node_map[cmd_blocked.chr_idx]
