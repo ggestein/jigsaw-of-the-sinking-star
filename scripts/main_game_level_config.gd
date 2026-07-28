@@ -91,6 +91,15 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	]
 	level_config.pads = []
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.box_packed_scene_path[1] = AssetPathConfig.box_blue_packedscene_path()
+	level_theme_config.box_packed_scene_path[2] = AssetPathConfig.box_yellow_packedscene_path()
+	level_theme_config.box_packed_scene_path[3] = AssetPathConfig.box_green_packedscene_path()
+	level_theme_config.box_packed_scene_path[4] = AssetPathConfig.box_red_packedscene_path()
+	level_theme_config.box_packed_scene_path[5] = AssetPathConfig.box_yellow_packedscene_path()
+	level_theme_config.box_packed_scene_path[6] = AssetPathConfig.box_green_packedscene_path()
+	level_theme_config.box_packed_scene_path[7] = AssetPathConfig.box_blue_packedscene_path()
+	level_theme_config.box_packed_scene_path[8] = AssetPathConfig.box_red_packedscene_path()
+	level_theme_config.box_packed_scene_path[9] = AssetPathConfig.box_yellow_packedscene_path()
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 2"
 	config_entry.level_config = level_config

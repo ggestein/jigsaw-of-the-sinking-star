@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://betlorikl4mjt"]
+
+[ext_resource type="PackedScene" uid="uid://dp1jeyknsm317" path="res://arts/self_crafted/crystal.glb" id="1_3ycm8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fon3g"]
+albedo_color = Color(0.81, 0.42119998, 0.67392004, 1)
+emission_enabled = true
+emission = Color(0.81, 0.42119998, 0.67392004, 1)
+clearcoat_enabled = true
+clearcoat_roughness = 0.67
+
+[node name="crystal" unique_id=1320793623 instance=ExtResource("1_3ycm8")]
+
+[node name="Cube" parent="." index="0" unique_id=298939701]
+material_override = SubResource("StandardMaterial3D_fon3g")

@@ -112,7 +112,12 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 	# setup boxes
 	for box_idx in range(0, len(game_instance_args.initial_state.boxes)):
 		var box_pos := game_instance_args.initial_state.boxes[box_idx].position
-		var box_proto: PackedScene = load(AssetPathConfig.box_packedscene_path())
+		var box_proto_path := AssetPathConfig.box_red_packedscene_path()
+		if level_theme.box_packed_scene_path.has(box_idx):
+			var override_path := level_theme.box_packed_scene_path[box_idx]
+			if override_path != null and !override_path.is_empty():
+				box_proto_path = override_path
+		var box_proto: PackedScene = load(box_proto_path)
 		var box_inst := box_proto.instantiate() as Node3D
 		add_child(box_inst)
 		box_inst.position = grid_to_world(box_pos)
