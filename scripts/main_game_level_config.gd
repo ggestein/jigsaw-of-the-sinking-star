@@ -91,12 +91,13 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	]
 	level_config.pads = []
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(2)
 	level_theme_config.box_packed_scene_path[1] = AssetPathConfig.box_blue_packedscene_path()
 	level_theme_config.box_packed_scene_path[2] = AssetPathConfig.box_yellow_packedscene_path()
 	level_theme_config.box_packed_scene_path[3] = AssetPathConfig.box_green_packedscene_path()
 	level_theme_config.box_packed_scene_path[4] = AssetPathConfig.box_red_packedscene_path()
 	level_theme_config.box_packed_scene_path[5] = AssetPathConfig.box_yellow_packedscene_path()
-	level_theme_config.box_packed_scene_path[6] = AssetPathConfig.box_green_packedscene_path()
+	level_theme_config.box_packed_scene_path[6] = AssetPathConfig.box_red_packedscene_path()
 	level_theme_config.box_packed_scene_path[7] = AssetPathConfig.box_blue_packedscene_path()
 	level_theme_config.box_packed_scene_path[8] = AssetPathConfig.box_red_packedscene_path()
 	level_theme_config.box_packed_scene_path[9] = AssetPathConfig.box_yellow_packedscene_path()
@@ -136,6 +137,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(3)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 3"
 	config_entry.level_config = level_config
@@ -176,6 +178,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0, 1, 2]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(4)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 4"
 	config_entry.level_config = level_config
@@ -206,6 +209,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	]
 	level_config.pads = []
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(5)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 5"
 	config_entry.level_config = level_config
@@ -261,6 +265,13 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(6)
+	level_theme_config.box_packed_scene_path[1] = AssetPathConfig.box_blue_packedscene_path()
+	level_theme_config.box_packed_scene_path[2] = AssetPathConfig.box_yellow_packedscene_path()
+	level_theme_config.box_packed_scene_path[3] = AssetPathConfig.box_green_packedscene_path()
+	level_theme_config.box_packed_scene_path[4] = AssetPathConfig.box_red_packedscene_path()
+	level_theme_config.box_packed_scene_path[5] = AssetPathConfig.box_yellow_packedscene_path()
+	level_theme_config.box_packed_scene_path[6] = AssetPathConfig.box_red_packedscene_path()
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 6"
 	config_entry.level_config = level_config

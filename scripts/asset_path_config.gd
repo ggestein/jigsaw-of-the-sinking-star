@@ -53,6 +53,6 @@ static func ground_grid_packedscene_path() -> StringName:
 	return ENTITIES_BASE_PATH + "ground_grid.tscn"
 
 static func background_packedscene_path(level_index: int) -> StringName:
-	if level_index <= 0 or level_index > 1:
+	if level_index <= 0 or level_index > 17:
 		return ""
 	return BACKGROUND_BASE_PATH + ("bg_%d.tscn" % level_index)
