@@ -38,6 +38,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	]
 	level_config.pads = []
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(1)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 1"
 	config_entry.level_config = level_config

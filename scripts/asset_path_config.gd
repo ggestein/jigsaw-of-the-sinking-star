@@ -5,6 +5,7 @@ const CASTLE_BASE_PATH: StringName = "res://arts/kenney_castle_kit/"
 const CHARACTER_BASE_PATH: StringName = "res://arts/kenney_mini_characters/"
 const EFFECT_BASE_PATH: StringName = "res://scenes/effects/"
 const ENTITIES_BASE_PATH: StringName = "res://scenes/entities/"
+const BACKGROUND_BASE_PATH: StringName = "res://scenes/backgrounds/"
 
 static func character_warrior_packedscene_path() -> StringName:
 	return CHARACTER_BASE_PATH + "character-male-b.glb"
@@ -41,3 +42,8 @@ static func player_cursor_packedscene_path() -> StringName:
 
 static func ground_grid_packedscene_path() -> StringName:
 	return ENTITIES_BASE_PATH + "ground_grid.tscn"
+
+static func background_packedscene_path(level_index: int) -> StringName:
+	if level_index <= 0 or level_index > 1:
+		return ""
+	return BACKGROUND_BASE_PATH + ("bg_%d.tscn" % level_index)

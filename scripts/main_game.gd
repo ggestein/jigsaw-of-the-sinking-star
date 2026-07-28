@@ -91,9 +91,6 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 			cube_inst.position.z = -(obs.y + 0.5)
 			cube_inst.scale = Vector3(1.0, 1.0, 1.0)
 			obstacle_node_map[obs_idx] = cube_inst
-		var dir_light = DirectionalLight3D.new()
-		add_child(dir_light)
-		dir_light.look_at(Vector3(3.0, -1.0, 1.0))
 	# setup characters
 	for chr_idx in range(0, len(game_instance_args.level_data.character_data)):
 		var chr_cls := game_instance_args.level_data.character_data[chr_idx]
