@@ -24,6 +24,9 @@ static func exchange_effect_packedscene_path() -> StringName:
 static func trans_effect_packedscene_path() -> StringName:
 	return EFFECT_BASE_PATH + "trans_effect.tscn"
 
+static func killed_effect_packedscene_path() -> StringName:
+	return EFFECT_BASE_PATH + "killed_effect.tscn"
+
 static func pad_packedscene_path() -> StringName:
 	return ENTITIES_BASE_PATH + "pad.tscn"
 

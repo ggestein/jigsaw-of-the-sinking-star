@@ -284,10 +284,16 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 	elif evt.type == CoreGameplay.EventType.KILL:
 		var kill_type = evt.args[0]
 		var kill_idx = evt.args[1]
+		var target_node: Node3D = null;
 		if kill_type == 1:
-			character_node_map[kill_idx].visible = false
+			target_node = character_node_map[kill_idx]
 		elif kill_type == 2:
-			box_node_map[kill_idx].visible = false
+			target_node = box_node_map[kill_idx]
+		target_node.visible = false
+		var vfx_pos = target_node.position
+		var vfx_inst: Node3D = load(AssetPathConfig.killed_effect_packedscene_path()).instantiate() 
+		add_child(vfx_inst)
+		vfx_inst.position = vfx_pos
 	elif evt.type == CoreGameplay.EventType.SWITCH:
 		refresh_cursor_color()
 	elif evt.type == CoreGameplay.EventType.REWINDED:

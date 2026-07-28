@@ -7,7 +7,7 @@
 render_priority = 0
 shader = ExtResource("2_sxsfv")
 shader_parameter/line_color = Vector3(0.3, 0.3, 0.3)
-shader_parameter/line_width = 1.02
+shader_parameter/line_width = 0.02
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_se8m8"]
 material = SubResource("ShaderMaterial_puy4m")

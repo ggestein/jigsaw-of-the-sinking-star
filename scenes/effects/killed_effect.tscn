@@ -1,0 +1,45 @@
+[gd_scene format=3 uid="uid://d3diesnbhjx1a"]
+
+[ext_resource type="Script" uid="uid://cxyjylicogmj8" path="res://scripts/scene_scripts/normal_effect.gd" id="1_cmpem"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_cc0yh"]
+direction = Vector3(0, 1, 0)
+spread = 145.513
+initial_velocity_min = 0.5
+initial_velocity_max = 4.0
+gravity = Vector3(0, 9.8, 0)
+
+[sub_resource type="Gradient" id="Gradient_cc0yh"]
+offsets = PackedFloat32Array(0.51707315, 0.5626016)
+colors = PackedColorArray(1.913131, 0, 0.06806339, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_mg6cm"]
+gradient = SubResource("Gradient_cc0yh")
+width = 32
+height = 32
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpm6f"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_texture = SubResource("GradientTexture2D_mg6cm")
+billboard_mode = 1
+
+[sub_resource type="QuadMesh" id="QuadMesh_4065q"]
+material = SubResource("StandardMaterial3D_bpm6f")
+
+[node name="TransEffect" type="Node3D" unique_id=1636515704]
+script = ExtResource("1_cmpem")
+destroy_time = 3.0
+
+[node name="GPUParticles3D" type="GPUParticles3D" parent="." unique_id=387122613]
+emitting = false
+amount = 10
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.57
+process_material = SubResource("ParticleProcessMaterial_cc0yh")
+draw_pass_1 = SubResource("QuadMesh_4065q")
