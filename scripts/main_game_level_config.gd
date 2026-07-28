@@ -690,6 +690,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0, 1]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(13)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 13"
 	config_entry.level_config = level_config
@@ -758,6 +759,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0, 1]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(14)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 14"
 	config_entry.level_config = level_config
@@ -824,6 +826,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0, 1]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(15)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 15"
 	config_entry.level_config = level_config
@@ -872,6 +875,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(16)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 16"
 	config_entry.level_config = level_config
@@ -939,6 +943,7 @@ static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	door_config.need_pads_indices = [0, 1]
 	level_config.doors.append(door_config)
 	level_theme_config = LevelTheme.LevelThemeConfig.new()
+	level_theme_config.bg_packed_scene_path = AssetPathConfig.background_packedscene_path(17)
 	config_entry = LevelConfigEntry.new()
 	config_entry.name = "LEVEL 17"
 	config_entry.level_config = level_config
