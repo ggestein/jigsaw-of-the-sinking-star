@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bgr2puqrv8lfd"]
+
+[ext_resource type="Script" uid="uid://cbt1764u7dg5e" path="res://scripts/entities/character.gd" id="1_516ak"]
+[ext_resource type="PackedScene" uid="uid://c17x3dqyyspvf" path="res://arts/kenney_mini_characters/character-male-c.glb" id="1_janu0"]
+
+[node name="Mage" type="Node3D" unique_id=492446630]
+script = ExtResource("1_516ak")
+
+[node name="character-male-c2" parent="." unique_id=1847055896 instance=ExtResource("1_janu0")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)

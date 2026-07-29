@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dpgjn03ivsec"]
+
+[ext_resource type="PackedScene" uid="uid://fwgvodmqy1b3" path="res://arts/kenney_mini_characters/character-male-a.glb" id="1_2dwgt"]
+[ext_resource type="Script" uid="uid://cbt1764u7dg5e" path="res://scripts/entities/character.gd" id="1_dqmr4"]
+
+[node name="Thief" type="Node3D" unique_id=666210213]
+script = ExtResource("1_dqmr4")
+
+[node name="character-male-a2" parent="." unique_id=1375034163 instance=ExtResource("1_2dwgt")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)

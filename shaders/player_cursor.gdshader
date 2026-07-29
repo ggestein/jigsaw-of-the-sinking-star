@@ -11,7 +11,7 @@ void fragment() {
 	EMISSION = emission_color;
 	float dist = sqrt(pow(UV.x - 0.5, 2) + pow(UV.y - 0.5, 2));
 	float angle = atan(UV.y - 0.5, UV.x - 0.5);
-	ALPHA = step(0.0, sin((angle + TIME * 0.5) * 6.0)) * step(dist, 0.15) * (1.0 - step(dist, 0.13));
+	ALPHA = step(0.0, sin((angle + TIME * 0.5) * 6.0)) * step(dist, 0.25) * (1.0 - step(dist, 0.23));
 }
 
 //void light() {

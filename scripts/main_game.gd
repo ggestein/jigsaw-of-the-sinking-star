@@ -1,7 +1,7 @@
 class_name MainGame
 extends Node
 
-const FAST_FORWARD_DELTA_TIME_FACTOR: float = 6.0
+const FAST_FORWARD_DELTA_TIME_FACTOR: float = 8.0
 const CAMERA_FOCUS_HEIGHT_FACTOR: float = 0.6
 const CAMERA_FOCUS_BACKWARD_FACTOR: float = 0.25
 const CAMERA_FOCUS_POSITION_Y_RATIO: float = 0.4
@@ -39,7 +39,7 @@ class CmdCharacterBlockedMove:
 var current_game_instance: CoreGameplay.GameInstance
 var obstacle_node_map: Dictionary[int, Node3D]
 var box_node_map: Dictionary[int, Crystal]
-var character_node_map: Dictionary[int, Node3D]
+var character_node_map: Dictionary[int, Character]
 var pad_node_map: Dictionary[int, Pad]
 var door_node_map: Dictionary[int, Door]
 var goal_node_map: Dictionary[int, Goal]
@@ -51,6 +51,7 @@ var core_gameplay_event_queue: Array[CoreGameplay.Event] = []
 var processing_cmd: Variant = null
 var pending_cmd: Variant = null
 var waiting_move_entries: Array[MoveEntry]
+var waiting_move_is_push: bool = false
 var won: WinProcess = null
 
 func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.LevelThemeConfig):
@@ -104,7 +105,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 		elif chr_cls == CoreGameplay.CharacterClass.MAGE:
 			chr_proto = load(AssetPathConfig.character_mage_packedscene_path())
 		if chr_proto != null:
-			var chr_inst := chr_proto.instantiate() as Node3D
+			var chr_inst := chr_proto.instantiate() as Character
 			add_child(chr_inst)
 			chr_inst.position = grid_to_world(chr_pos)
 			chr_inst.rotation = face_to_rotation(chr_face)
@@ -195,9 +196,12 @@ func force_refresh():
 	for chr_idx in character_node_map:
 		var node := character_node_map[chr_idx]
 		var chr_inst := current_state.characters[chr_idx]
-		node.visible = not chr_inst.killed
 		node.position = grid_to_world(chr_inst.inst_position)
 		node.rotation = face_to_rotation(chr_inst.inst_face)
+		if chr_inst.killed:
+			node.die()
+		else:
+			node.force_idle()
 	for box_idx in box_node_map:
 		var node := box_node_map[box_idx]
 		var box_inst := current_state.boxes[box_idx]
@@ -250,6 +254,7 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		new_move_entry.from = grid_to_world(prev_pos)
 		new_move_entry.to = grid_to_world(new_pos)
 		waiting_move_entries.append(new_move_entry)
+		waiting_move_is_push = true
 	elif evt.type == CoreGameplay.EventType.PAD_ACTIVE:
 		var pad_idx = evt.args[0]
 		var active = evt.args[1]
@@ -288,10 +293,12 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		var kill_idx = evt.args[1]
 		var target_node: Node3D = null;
 		if kill_type == 1:
-			target_node = character_node_map[kill_idx]
+			var target_chr_node := character_node_map[kill_idx]
+			target_node = target_chr_node
+			target_chr_node.die()
 		elif kill_type == 2:
 			target_node = box_node_map[kill_idx]
-		target_node.visible = false
+			target_node.visible = false
 		var vfx_pos = target_node.position
 		var vfx_inst: Node3D = load(AssetPathConfig.killed_effect_packedscene_path()).instantiate() 
 		add_child(vfx_inst)
@@ -363,6 +370,17 @@ func process_move_entry(entry: MoveEntry, ratio: float, need_stop: bool):
 				elif entry.to.x < entry.from.x:
 					next_face = 3
 			crystal.set_pushing_face(next_face)
+		elif target_node_3d is Character:
+			var chr := target_node_3d as Character
+			var cur_need_stop := need_stop
+			# if the character is still moving in pending command, then keep play moving animation
+			if cur_need_stop:
+				if pending_cmd != null and pending_cmd is CmdNormalMove:
+					var actual_pending_moving_cmd := pending_cmd as CmdNormalMove
+					for pending_entry in actual_pending_moving_cmd.move_entries:
+						if pending_entry.type == entry.type and pending_entry.idx == entry.idx:
+							cur_need_stop = false
+			chr.set_is_moving(not cur_need_stop)
 	
 func process_single_cmd(cmd: Variant, dt: float) -> float:
 	cmd.current_time += dt
@@ -410,13 +428,14 @@ func process_cmds(dt: float) -> void:
 				
 func prepare_input_queue_process():
 	waiting_move_entries = []
+	waiting_move_is_push = false
 	
 func post_handle_input_queue_process():
 	player_input_queue.clear()
 	if len(waiting_move_entries) > 0:
 		var cmd_move := CmdNormalMove.new()
 		cmd_move.current_time = 0.0
-		cmd_move.total_time = 0.2
+		cmd_move.total_time = 0.7 if waiting_move_is_push else 0.4
 		cmd_move.move_entries = waiting_move_entries
 		append_cmd(cmd_move)
 

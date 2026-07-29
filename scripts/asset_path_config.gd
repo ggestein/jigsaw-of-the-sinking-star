@@ -2,19 +2,19 @@ class_name AssetPathConfig
 extends Object
 
 const CASTLE_BASE_PATH: StringName = "res://arts/kenney_castle_kit/"
-const CHARACTER_BASE_PATH: StringName = "res://arts/kenney_mini_characters/"
+const CHARACTER_BASE_PATH: StringName = "res://scenes/characters/"
 const EFFECT_BASE_PATH: StringName = "res://scenes/effects/"
 const ENTITIES_BASE_PATH: StringName = "res://scenes/entities/"
 const BACKGROUND_BASE_PATH: StringName = "res://scenes/backgrounds/"
 
 static func character_warrior_packedscene_path() -> StringName:
-	return CHARACTER_BASE_PATH + "character-male-b.glb"
+	return CHARACTER_BASE_PATH + "warrior.tscn"
 	
 static func character_thief_packedscene_path() -> StringName:
-	return CHARACTER_BASE_PATH + "character-male-a.glb"
+	return CHARACTER_BASE_PATH + "thief.tscn"
 
 static func character_mage_packedscene_path() -> StringName:
-	return CHARACTER_BASE_PATH + "character-male-c.glb"
+	return CHARACTER_BASE_PATH + "mage.tscn"
 
 static func box_red_packedscene_path() -> StringName:
 	return ENTITIES_BASE_PATH + "crystal_red.tscn"
