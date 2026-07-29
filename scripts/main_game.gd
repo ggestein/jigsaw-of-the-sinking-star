@@ -38,7 +38,7 @@ class CmdCharacterBlockedMove:
 
 var current_game_instance: CoreGameplay.GameInstance
 var obstacle_node_map: Dictionary[int, Node3D]
-var box_node_map: Dictionary[int, Node3D]
+var box_node_map: Dictionary[int, Crystal]
 var character_node_map: Dictionary[int, Node3D]
 var pad_node_map: Dictionary[int, Pad]
 var door_node_map: Dictionary[int, Door]
@@ -118,7 +118,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 			if override_path != null and !override_path.is_empty():
 				box_proto_path = override_path
 		var box_proto: PackedScene = load(box_proto_path)
-		var box_inst := box_proto.instantiate() as Node3D
+		var box_inst := box_proto.instantiate() as Crystal
 		add_child(box_inst)
 		box_inst.position = grid_to_world(box_pos)
 		box_node_map[box_idx] = box_inst
@@ -345,11 +345,24 @@ func get_node3d_by_type_and_index(type: int, idx: int) -> Node3D:
 			return box_node_map[idx]
 	return null
 
-func process_move_entry(entry: MoveEntry, ratio: float):
+func process_move_entry(entry: MoveEntry, ratio: float, need_stop: bool):
 	var target_node_3d := get_node3d_by_type_and_index(entry.type, entry.idx)
 	if target_node_3d != null:
 		var actual_ratio = 1 - pow(1 - ratio, 3)
 		target_node_3d.position = lerp(entry.from, entry.to, actual_ratio)
+		if target_node_3d is Crystal:
+			var crystal := target_node_3d as Crystal
+			var next_face := -1
+			if not need_stop:
+				if entry.to.z > entry.from.z:
+					next_face = 0
+				elif entry.to.x > entry.from.x:
+					next_face = 1
+				elif entry.to.z < entry.from.z:
+					next_face = 2
+				elif entry.to.x < entry.from.x:
+					next_face = 3
+			crystal.set_pushing_face(next_face)
 	
 func process_single_cmd(cmd: Variant, dt: float) -> float:
 	cmd.current_time += dt
@@ -357,7 +370,7 @@ func process_single_cmd(cmd: Variant, dt: float) -> float:
 		var cmd_move = cmd as CmdNormalMove
 		var ratio = min(1.0, cmd.current_time / cmd.total_time)
 		for passive in cmd_move.move_entries:
-			process_move_entry(passive, ratio)
+			process_move_entry(passive, ratio, cmd.current_time >= cmd.total_time)
 	elif cmd is CmdPosExchange:
 		var cmd_ex = cmd as CmdPosExchange
 		var from_node := get_node3d_by_type_and_index(cmd_ex.from_type, cmd_ex.from_idx)

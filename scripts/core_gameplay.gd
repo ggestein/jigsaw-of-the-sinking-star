@@ -55,7 +55,6 @@ static func normalize_state(level_data: LevelData, state: GameState):
 	state.goals_active = calculate_goals_active(level_data, state)
 	
 static func emit_character_rotate_event(chr_idx: int, prev_face: int, face: int, events: Array[Event]):
-	print("emit_character_rotate_event")
 	var evt := Event.new()
 	evt.type = EventType.CHAR_ROTATE
 	evt.args = [chr_idx, prev_face, face]

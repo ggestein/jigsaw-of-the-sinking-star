@@ -1,15 +1,60 @@
-[gd_scene format=3 uid="uid://u7x3h4tect2o"]
+[gd_scene format=4 uid="uid://ik55b5eccdnb"]
 
-[ext_resource type="PackedScene" uid="uid://dp1jeyknsm317" path="res://arts/self_crafted/crystal.glb" id="1_chrf8"]
+[ext_resource type="Script" uid="uid://tqk7ndm3u0h1" path="res://scripts/entities/crystal.gd" id="2_gbs1p"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fon3g"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_chrf8"]
 albedo_color = Color(0.41960785, 0.8117647, 0.42745098, 1)
 emission_enabled = true
 emission = Color(0.42119998, 0.81, 0.42768, 1)
 clearcoat_enabled = true
 clearcoat_roughness = 0.67
 
-[node name="crystal" unique_id=1320793623 instance=ExtResource("1_chrf8")]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_n2rel"]
+resource_name = "Material"
+cull_mode = 2
+albedo_color = Color(0.9063318, 0.9063318, 0.9063318, 1)
+roughness = 0.5
 
-[node name="Cube" parent="." index="0" unique_id=298939701]
-material_override = SubResource("StandardMaterial3D_fon3g")
+[sub_resource type="ArrayMesh" id="ArrayMesh_qv5ct"]
+_surfaces = [{
+"aabb": AABB(-0.49857864, -0.9887984, -0.49851587, 0.9975884, 1.0723763, 0.9959689),
+"format": 34896613377,
+"index_count": 228,
+"index_data": PackedByteArray("AAABAAIAAgADAAAAAwAEAAAAAAAFAAEABAAFAAAABQAGAAEAAQAGAAcABQAIAAYACAAHAAYAAQAHAAkAAgABAAkACQAHAAoABwALAAoACAALAAcACQAKAAwADAAKAAsADQAJAAwAAgAJAA0ADAALAA4ADQAMAA8ADwAMAA4ADgALABAACwAIABEACwARABAAEQAIABIAEwACAA0ADwATAA0ADgAQABQAFAAQABEAFQAOABQADwAOABUAFAARABYAFgARABIAFQAUABcAFwAUABYAFQAYAA8AFwAYABUAGQASAAgAFgASABkAGQAIAAUABAAZAAUAGgAWABkAGgAZAAQAFwAWABoABAAbABoAGgAbABcAHAAXABsABAAdABsAGwAdABwAHQAEAB4AHgAEAAMAHwAXABwAFwAfABgAHQAgABwAHwAcACAAHQAeACEAIQAgAB0AAwAiAB4AHgAiACEAAgAiAAMAGAAfACMAIwAPABgAIAAkAB8AIwAfACQAJQAgACEAJQAhACIAIAAlACQAIgACACYAIgAmACUAJgACABMAJwAjACQAJAAlACcAJwAlACYAEwAnACYAJwAPACMADwAnABMA"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 40,
+"vertex_data": PackedByteArray("ER7m1zZIAACZKeXp3LEAAHkds9QWuAAAOQZYjP8DAADTTLHRrh0AANYrO+45TgAAqlFP/dygAACwZ/n5+LUAAAtRff6wYgAAKE4W35rWAAAjpXb5+LUAAOa51/zcoAAAl7GLzb7WAAC2SqfC3uMAAAbW4c5zsgAAKrVLtN7jAACMucz+WGIAAJWl///fTgAAymTp//BOAACQCe+KAPwAAMLTzdWQTQAAaeLIuE24AAAirwvc0SsAAO7hI70ASAAAIvb2cLn8AAAlUQ/rgysAAB2zPsXxHQAAv/lMjIkDAAC/+T4yiQMAAL/HaAIAAAAAOQahMv8DAAD//wAAwskAAP//AACDNgAAIzhoAgAAAAAAAJMAyDYAACL2dRm5/AAAtcXlBP//AAAAAJMAeskAAJAJwzMA/AAAKjrlBP//AAA=")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6g4an"]
+resource_name = "crystal_Cube"
+_surfaces = [{
+"aabb": AABB(-0.49857864, -0.9887984, -0.49851587, 0.9975884, 1.0723763, 0.9959689),
+"attribute_data": PackedByteArray("ceii9vDDOf7OwXD1Web//9VuoOobZOH5Q19k8YVwCfUXFnl7BAp6idIF+IAjF8GFlD5V39EZgOvNFy7hpDyR6OJJw4uAOXCM4zoJgZpF4pMD3Kd4r8UAeHTQ7GvyzD1/mAkX6gAAbc3NFy7hLKqVVlqXH0PLqFNF0gX4gAAAy2AXFnl70FKORoBkH0PBUUpXElaqz9VuoOpDX2TxoqiRmUKXrpssqkOIwVEXa+JJw4vjOgmBwVGQh5lkrpv7UmqY6Jh6nRJWz69FZxKe1W6g6hJWqs89qpbOPaqdrjGSz+VoRK6bAABUro8RDZzNFy7hAABtzRJW1MMSVp2llD5V3zGSz+WFcAn11W6g6gKRWO+ZZK6bLKpDiEKXrptalx9DLKqVVsFRSlfBUZCHgGQfQwNBijoAAHdByBD9ORcWeXsAAMtgwVEXa8FR4kvjOgmBU+4wpz2qVLqquzCnzsFw9VWqNtn//1zZ5v+TuXHoovbNFy7haQ5x8pgJF+rRGYDr4zoJgSMXwYUXFnl7gDlwjD2qz3+rsQac56pllcXNr5RHx6Kbr8UAeD+xVXjyzD1/0RmA65Qa//9pDnHyLCH4/AKRWO/Nd///hXAJ9TKOv/+kPJHoLCH4/NEZgOvBNhf8A9wam/LMPX8D3Kd4xc2vlIA5cIz2GpWYIxfBhTQwApkjF8GFexOumwQKeon2GpWYTNAwp8XNr5QD3BqbR8eimw=="),
+"format": 34896613399,
+"index_count": 228,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFAAXABUAGAAZABoAGwAcAB0AHgAfACAAIQAiACMAJAAlACYAJwAoACkAKgArACwALQAuAC8AMAAxADIAMAAzADEAMQAzADQAMwAwADUANQAwADYAMwA1ADcAOAA5ADoAOAA7ADkAOQA7ADwAOwA4AD0APQA4AD4AOwA9AD8AQABBAEIAQABDAEEARABFAEYARABHAEUARQBHAEgARwBEAEkASQBEAEoARwBJAEsATABNAE4ATABPAE0ATQBPAFAATwBMAFEAUQBMAFIATwBRAFMAVABVAFYAVABXAFUAVQBXAFgAVwBUAFkAWQBUAFoAVwBZAFsAXABdAF4AXABfAF0AYABhAGIAYABjAGEAZABlAGYAZABnAGUAZQBnAGgAZwBkAGkAaQBkAGoAZwBpAGsAbABtAG4AbABvAG0AcABxAHIAcABzAHEAdAB1AHYAdAB3AHUAeAB5AHoAeAB7AHkAfAB9AH4AfAB/AH0AgACBAIIAgACDAIEAhACFAIYAhACHAIUA"),
+"material": SubResource("StandardMaterial3D_n2rel"),
+"name": "Material",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 136,
+"vertex_data": PackedByteArray("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")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_qv5ct")
+
+[node name="CrystalRed" type="Node3D" unique_id=136427355]
+script = ExtResource("2_gbs1p")
+rotate_speed = 6.0
+rotate_amount = 0.15
+
+[node name="crystal" type="Node3D" parent="." unique_id=1320793623]
+
+[node name="Cube" type="MeshInstance3D" parent="crystal" unique_id=298939701]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = SubResource("StandardMaterial3D_chrf8")
+mesh = SubResource("ArrayMesh_6g4an")
