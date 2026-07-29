@@ -55,6 +55,7 @@ static func normalize_state(level_data: LevelData, state: GameState):
 	state.goals_active = calculate_goals_active(level_data, state)
 	
 static func emit_character_rotate_event(chr_idx: int, prev_face: int, face: int, events: Array[Event]):
+	print("emit_character_rotate_event")
 	var evt := Event.new()
 	evt.type = EventType.CHAR_ROTATE
 	evt.args = [chr_idx, prev_face, face]
@@ -267,6 +268,10 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 	next_state.goals_active = calculate_goals_active(level_data, next_state)
 	# move events, check and emit
 	for chr_idx in range(0, len(next_state.characters)):
+		var prev_face := state.characters[chr_idx].inst_face
+		var new_face := next_state.characters[chr_idx].inst_face
+		if new_face != prev_face:
+			emit_character_rotate_event(chr_idx, prev_face, new_face, events)
 		if pos_exchange_from_type == 1 and pos_exchange_from_idx == chr_idx:
 			continue
 		if pos_exchange_to_type == 1 and pos_exchange_to_idx == chr_idx:
@@ -278,10 +283,6 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 			evt.type = EventType.CHAR_MOVE
 			evt.args = [chr_idx, prev_pos, new_pos]
 			events.append(evt)
-		var prev_face := state.characters[chr_idx].inst_face
-		var new_face := next_state.characters[chr_idx].inst_face
-		if new_face != prev_face:
-			emit_character_rotate_event(chr_idx, prev_face, new_face, events)
 	for box_idx in range(0, len(next_state.boxes)):
 		if pos_exchange_from_type == 2 and pos_exchange_from_idx == box_idx:
 			continue
