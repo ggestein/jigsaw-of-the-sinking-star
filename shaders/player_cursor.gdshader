@@ -10,7 +10,8 @@ void vertex() {
 void fragment() {
 	EMISSION = emission_color;
 	float dist = sqrt(pow(UV.x - 0.5, 2) + pow(UV.y - 0.5, 2));
-	ALPHA = step(dist, 0.15) * (1.0 - step(dist, 0.13));
+	float angle = atan(UV.y - 0.5, UV.x - 0.5);
+	ALPHA = step(0.0, sin((angle + TIME * 0.5) * 6.0)) * step(dist, 0.15) * (1.0 - step(dist, 0.13));
 }
 
 //void light() {
