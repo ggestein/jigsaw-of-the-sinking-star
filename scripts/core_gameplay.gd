@@ -114,9 +114,13 @@ static func core_gameplay_handle_input(input: PlayerInput, game_inst: GameInstan
 		events.append(evt)
 	else:
 		var cur_state := game_inst.history_states[len(game_inst.history_states) - 1]
-		var next_state := calculate_next_state(input, game_inst.level_data, cur_state, events)
+		var next_state_result := calculate_next_state(input, game_inst.level_data, cur_state, events)
+		var next_state := next_state_result.next_state
 		if next_state:
-			game_inst.history_states.append(next_state)
+			if next_state_result.replace_top:
+				game_inst.history_states[len(game_inst.history_states) - 1] = next_state
+			else:
+				game_inst.history_states.append(next_state)
 
 static func util_is_position_blocked(level_data: LevelData, state: GameState, position: Vector2i) -> bool:
 	if not level_data.range.has_point(position):
@@ -143,10 +147,17 @@ static func util_find_movable_in_position(state: GameState, position: Vector2i) 
 			return [2, box_idx]
 	return [0, 0]
 
-static func calculate_next_state(input: PlayerInput, level_data: LevelData, state: GameState, events: Array[Event]) -> GameState:
-	var next_state := GameState.new()
-	next_state.current_character_index = state.current_character_index
-	next_state.characters = []
+class NextStateCalculationResult:
+	var next_state: GameState
+	var replace_top: bool
+
+static func calculate_next_state(input: PlayerInput, level_data: LevelData, state: GameState, events: Array[Event]) -> NextStateCalculationResult:
+	var result: NextStateCalculationResult = NextStateCalculationResult.new()
+	result.replace_top = false
+	result.next_state = GameState.new()
+	result.next_state.current_character_index = state.current_character_index
+	result.next_state.characters = []
+	var has_position_change = false
 	# input to direction
 	var next_face := -1
 	if input == PlayerInput.MOVE_UP:
@@ -237,6 +248,7 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 							pos_exchange_to_type, pos_exchange_to_idx, pos_exchange_to_pos,
 						]
 						events.append(exchange_evt)
+						has_position_change = true
 					else:
 						has_next = true
 						next_check_pos = next_check_pos + chr_move_vec
@@ -244,14 +256,14 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		new_char_inst.inst_position = ch.inst_position + chr_move_vec
 		var chr_next_face := next_face if idx == state.current_character_index else -1
 		new_char_inst.inst_face = chr_next_face if chr_next_face != -1 else ch.inst_face
-		next_state.characters.append(new_char_inst)
+		result.next_state.characters.append(new_char_inst)
 
-	next_state.boxes = []
+	result.next_state.boxes = []
 	for b in state.boxes:
 		var new_box_inst = BoxInstance.new()
 		new_box_inst.position = b.position
 		new_box_inst.killed = b.killed
-		next_state.boxes.append(new_box_inst)
+		result.next_state.boxes.append(new_box_inst)
 		
 	# handle passive move
 	for pm in passive_moves:
@@ -259,17 +271,17 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		var pm_idx = pm[1]
 		var pm_pos = pm[2]
 		if pm_t == 1:
-			next_state.characters[pm_idx].inst_position = pm_pos
+			result.next_state.characters[pm_idx].inst_position = pm_pos
 		elif pm_t == 2:
-			next_state.boxes[pm_idx].position = pm_pos
+			result.next_state.boxes[pm_idx].position = pm_pos
 
-	next_state.pads_active = calculate_pads_active(level_data, next_state)
-	next_state.doors_unlock = calculate_doors_active(level_data, next_state)
-	next_state.goals_active = calculate_goals_active(level_data, next_state)
+	result.next_state.pads_active = calculate_pads_active(level_data, result.next_state)
+	result.next_state.doors_unlock = calculate_doors_active(level_data, result.next_state)
+	result.next_state.goals_active = calculate_goals_active(level_data, result.next_state)
 	# move events, check and emit
-	for chr_idx in range(0, len(next_state.characters)):
+	for chr_idx in range(0, len(result.next_state.characters)):
 		var prev_face := state.characters[chr_idx].inst_face
-		var new_face := next_state.characters[chr_idx].inst_face
+		var new_face := result.next_state.characters[chr_idx].inst_face
 		if new_face != prev_face:
 			emit_character_rotate_event(chr_idx, prev_face, new_face, events)
 		if pos_exchange_from_type == 1 and pos_exchange_from_idx == chr_idx:
@@ -277,46 +289,48 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		if pos_exchange_to_type == 1 and pos_exchange_to_idx == chr_idx:
 			continue
 		var prev_pos := state.characters[chr_idx].inst_position
-		var new_pos := next_state.characters[chr_idx].inst_position
+		var new_pos := result.next_state.characters[chr_idx].inst_position
 		if new_pos != prev_pos:
 			var evt := Event.new()
 			evt.type = EventType.CHAR_MOVE
 			evt.args = [chr_idx, prev_pos, new_pos]
+			has_position_change = true
 			events.append(evt)
-	for box_idx in range(0, len(next_state.boxes)):
+	for box_idx in range(0, len(result.next_state.boxes)):
 		if pos_exchange_from_type == 2 and pos_exchange_from_idx == box_idx:
 			continue
 		if pos_exchange_to_type == 2 and pos_exchange_to_idx == box_idx:
 			continue
 		var prev_pos := state.boxes[box_idx].position
-		var new_pos := next_state.boxes[box_idx].position
+		var new_pos := result.next_state.boxes[box_idx].position
 		if new_pos != prev_pos:
 			var evt := Event.new()
 			evt.type = EventType.BOX_MOVE
 			evt.args = [box_idx, prev_pos, new_pos]
 			events.append(evt)
+			has_position_change = true
 	# pad event, check and emit
-	for pad_idx in range(0, len(next_state.pads_active)):
+	for pad_idx in range(0, len(result.next_state.pads_active)):
 		var prev_active := state.pads_active[pad_idx]
-		var new_active := next_state.pads_active[pad_idx]
+		var new_active := result.next_state.pads_active[pad_idx]
 		if new_active != prev_active:
 			var evt := Event.new()
 			evt.type = EventType.PAD_ACTIVE
 			evt.args = [pad_idx, new_active]
 			events.append(evt)
 	# door event, check and emit
-	for door_idx in range(0, len(next_state.doors_unlock)):
+	for door_idx in range(0, len(result.next_state.doors_unlock)):
 		var prev_unlock := state.doors_unlock[door_idx]
-		var new_unlock := next_state.doors_unlock[door_idx]
+		var new_unlock := result.next_state.doors_unlock[door_idx]
 		if new_unlock != prev_unlock:
 			var evt := Event.new()
 			evt.type = EventType.DOOR_UNLOCK
 			evt.args = [door_idx, new_unlock]
 			events.append(evt)
 	# goal event, check and emit
-	for goal_idx in range(0, len(next_state.goals_active)):
+	for goal_idx in range(0, len(result.next_state.goals_active)):
 		var prev_active := state.goals_active[goal_idx]
-		var new_active := next_state.goals_active[goal_idx]
+		var new_active := result.next_state.goals_active[goal_idx]
 		if prev_active != new_active:
 			var evt := Event.new()
 			evt.type = EventType.GOAL_ACTIVE
@@ -326,18 +340,18 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 	# kill event, check and emit
 	for door_idx in range(0, len(level_data.doors)):
 		var door_pos = level_data.doors[door_idx].position
-		var door_unlock = next_state.doors_unlock[door_idx]
+		var door_unlock = result.next_state.doors_unlock[door_idx]
 		if not door_unlock:
-			for chr_idx in range(0, len(next_state.characters)):
-				var char_inst := next_state.characters[chr_idx]
+			for chr_idx in range(0, len(result.next_state.characters)):
+				var char_inst := result.next_state.characters[chr_idx]
 				if (not char_inst.killed) and char_inst.inst_position == door_pos:
 					var new_evt := Event.new()
 					new_evt.type = EventType.KILL
 					new_evt.args = [1, chr_idx]
 					events.append(new_evt)
 					char_inst.killed = true
-			for box_idx in range(0, len(next_state.boxes)):
-				var box_inst := next_state.boxes[box_idx]
+			for box_idx in range(0, len(result.next_state.boxes)):
+				var box_inst := result.next_state.boxes[box_idx]
 				if (not box_inst.killed) and box_inst.position == door_pos:
 					var new_evt := Event.new()
 					new_evt.type = EventType.KILL
@@ -345,12 +359,12 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 					events.append(new_evt)
 					box_inst.killed = true
 	# win event, check and emit
-	if not next_state.goals_active.has(false):
+	if not result.next_state.goals_active.has(false):
 		var new_evt := Event.new()
 		new_evt.type = EventType.WIN
 		events.append(new_evt)
-	
-	return next_state
+	result.replace_top = not has_position_change
+	return result
 
 static func calculate_pads_active(level_data: LevelData, state: GameState) -> Array[bool]:
 	var result: Array[bool] = []
