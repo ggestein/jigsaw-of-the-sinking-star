@@ -335,7 +335,7 @@ func process_win():
 		return
 	var cur_ticks := Time.get_ticks_usec()
 	var delta_ticks := cur_ticks - won.win_base_ticks
-	var camera_target_pos := won.win_camera_base_pos + Vector3.UP * 2 + Vector3.FORWARD * 2
+	var camera_target_pos := won.win_camera_base_pos + Vector3.UP * 0.6 + Vector3.BACK * 0.6
 	var factor: float = max(0.0, 1.0 - float(delta_ticks) / 4000000.0)
 	factor = 1.0 - factor * factor
 	main_camera.position = lerp(won.win_camera_base_pos, camera_target_pos, factor)

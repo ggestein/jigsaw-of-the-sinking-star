@@ -5,6 +5,7 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2nkda"]
 emission_enabled = true
 emission = Color(0.8076375, 0.6849876, 0, 1)
+emission_energy_multiplier = 0.5
 normal_scale = 0.2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_se8m8"]
@@ -15,6 +16,7 @@ normal_scale = 0.2
 script = ExtResource("1_2nkda")
 pressed_position = -0.08
 move_speed = 1.0
+energy_change_speed = 5.0
 
 [node name="MainButton" type="Node3D" parent="." unique_id=87388952]
 
