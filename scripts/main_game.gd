@@ -302,7 +302,7 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		elif kill_type == 2:
 			target_node = box_node_map[kill_idx]
 			target_node.visible = false
-		var vfx_pos = target_node.position
+		var vfx_pos = target_node.position + Vector3.UP * 0.6
 		var vfx_inst: Node3D = load(AssetPathConfig.killed_effect_packedscene_path()).instantiate() 
 		add_child(vfx_inst)
 		vfx_inst.position = vfx_pos
