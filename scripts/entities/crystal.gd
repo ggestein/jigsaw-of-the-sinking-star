@@ -31,4 +31,8 @@ func _process(delta: float) -> void:
 		push_ratio_z = move_toward(push_ratio_z, ratio_target_z, delta * rotate_speed)
 		body.rotation.z = push_ratio_z * rotate_amount
 	var max_rot = max(abs(body.rotation.x), abs(body.rotation.z))
+	# vertical and horizontal offset of the body, for emulate the different rotating pivot
+	# when the body lean to different direction
 	body.position.y = sin(max_rot) * verticle_move_amount
+	body.position.x = (1 - cos(body.rotation.z)) * verticle_move_amount
+	body.position.z = (1 - cos(body.rotation.x)) * verticle_move_amount
