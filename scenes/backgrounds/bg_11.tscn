@@ -108,6 +108,57 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 0, -7.5)
 [node name="wall-corner-slant6" parent="Walls" unique_id=817875499 instance=ExtResource("11_ep5dq")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.5, 0, -7.5)
 
+[node name="tower-square-base-border2" parent="Walls" unique_id=921202281 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -6.5)
+
+[node name="tower-square-base-border3" parent="Walls" unique_id=331060680 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -4.5)
+
+[node name="tower-square-base-border4" parent="Walls" unique_id=1890541452 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -3.5)
+
+[node name="tower-square-base-border8" parent="Walls" unique_id=1077760143 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -2.5)
+
+[node name="tower-square-base-border9" parent="Walls" unique_id=159023401 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -1.5)
+
+[node name="tower-square-base-border10" parent="Walls" unique_id=1983721991 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -0.5)
+
+[node name="tower-square-base-border11" parent="Walls" unique_id=1192708998 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, 0.5)
+
+[node name="tower-square-base-border12" parent="Walls" unique_id=1010779124 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 0.5)
+
+[node name="tower-square-base-border13" parent="Walls" unique_id=420643968 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, 0.5)
+
+[node name="tower-square-base-border14" parent="Walls" unique_id=965299979 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, 0.5)
+
+[node name="tower-square-base-border15" parent="Walls" unique_id=887926356 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, 0.5)
+
+[node name="tower-square-base-border16" parent="Walls" unique_id=1515396685 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 0.5)
+
+[node name="tower-square-base-border17" parent="Walls" unique_id=2120133513 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0.5)
+
+[node name="tower-square-base-border18" parent="Walls" unique_id=188413773 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
+
+[node name="tower-square-base-border5" parent="Walls" unique_id=566459665 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0, -3.5)
+
+[node name="tower-square-base-border6" parent="Walls" unique_id=592657315 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, -3.5)
+
+[node name="tower-square-base-border7" parent="Walls" unique_id=1904236386 instance=ExtResource("4_qjeej")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0, -3.5)
+
 [node name="Decos" type="Node3D" parent="." unique_id=515266446]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=497420458]
@@ -117,54 +168,3 @@ environment = SubResource("Environment_se8m8")
 transform = Transform3D(-0.8812433, 0.40164086, -0.2491884, 0, 0.52720106, 0.84974056, 0.47266293, 0.7488282, -0.4645924, 0, 0, 0)
 light_energy = 0.2
 shadow_enabled = true
-
-[node name="tower-square-base-border2" parent="." unique_id=921202281 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -6.5)
-
-[node name="tower-square-base-border3" parent="." unique_id=331060680 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -4.5)
-
-[node name="tower-square-base-border4" parent="." unique_id=1890541452 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -3.5)
-
-[node name="tower-square-base-border8" parent="." unique_id=1077760143 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -2.5)
-
-[node name="tower-square-base-border9" parent="." unique_id=159023401 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -1.5)
-
-[node name="tower-square-base-border10" parent="." unique_id=1983721991 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -0.5)
-
-[node name="tower-square-base-border11" parent="." unique_id=1192708998 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, 0.5)
-
-[node name="tower-square-base-border12" parent="." unique_id=1010779124 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 0.5)
-
-[node name="tower-square-base-border13" parent="." unique_id=420643968 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, 0.5)
-
-[node name="tower-square-base-border14" parent="." unique_id=965299979 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, 0.5)
-
-[node name="tower-square-base-border15" parent="." unique_id=887926356 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, 0.5)
-
-[node name="tower-square-base-border16" parent="." unique_id=1515396685 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, 0.5)
-
-[node name="tower-square-base-border17" parent="." unique_id=2120133513 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0.5)
-
-[node name="tower-square-base-border18" parent="." unique_id=188413773 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 0.5)
-
-[node name="tower-square-base-border5" parent="." unique_id=566459665 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.5, 0, -3.5)
-
-[node name="tower-square-base-border6" parent="." unique_id=592657315 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, -3.5)
-
-[node name="tower-square-base-border7" parent="." unique_id=1904236386 instance=ExtResource("4_qjeej")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0, -3.5)

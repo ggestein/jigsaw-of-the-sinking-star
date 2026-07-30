@@ -222,28 +222,28 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -7.5)
 [node name="tower-square-base9" parent="Walls" unique_id=695056494 instance=ExtResource("16_7ybww")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -7.5)
 
-[node name="rocks-large2" parent="Walls" unique_id=1389796469 instance=ExtResource("16_bldx8")]
+[node name="Decos" type="Node3D" parent="." unique_id=515266446]
+
+[node name="rocks-large2" parent="Decos" unique_id=1389796469 instance=ExtResource("16_bldx8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3168712, 0, 1.4401864)
 
-[node name="rocks-small2" parent="Walls" unique_id=2029851186 instance=ExtResource("17_x8iwh")]
+[node name="rocks-small2" parent="Decos" unique_id=2029851186 instance=ExtResource("17_x8iwh")]
 transform = Transform3D(0.73809034, 0, -0.67470187, 0, 1, 0, 0.67470187, 0, 0.73809034, 7.463663, 0, 1.2542157)
 
-[node name="tree-large2" parent="Walls" unique_id=1274958199 instance=ExtResource("18_jeg5j")]
+[node name="tree-large2" parent="Decos" unique_id=1274958199 instance=ExtResource("18_jeg5j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.745565, 0, -6.070733)
 
-[node name="tree-large3" parent="Walls" unique_id=1819297742 instance=ExtResource("18_jeg5j")]
+[node name="tree-large3" parent="Decos" unique_id=1819297742 instance=ExtResource("18_jeg5j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.774344, 0, -3.8463037)
 
-[node name="tree-large4" parent="Walls" unique_id=757987618 instance=ExtResource("18_jeg5j")]
+[node name="tree-large4" parent="Decos" unique_id=757987618 instance=ExtResource("18_jeg5j")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7664266, 0, -8.843356)
 
-[node name="tree-trunk2" parent="Walls" unique_id=1779695293 instance=ExtResource("19_3eht8")]
+[node name="tree-trunk2" parent="Decos" unique_id=1779695293 instance=ExtResource("19_3eht8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.225031, 9.536743e-07, -9.685948)
 
-[node name="tree-log2" parent="Walls" unique_id=660025696 instance=ExtResource("20_6pbfo")]
+[node name="tree-log2" parent="Decos" unique_id=660025696 instance=ExtResource("20_6pbfo")]
 transform = Transform3D(0.059865855, 0, -0.99820644, 0, 1, 0, 0.99820644, 0, 0.059865855, 8.91186, 0, -9.553038)
-
-[node name="Decos" type="Node3D" parent="." unique_id=515266446]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=497420458]
 environment = SubResource("Environment_se8m8")

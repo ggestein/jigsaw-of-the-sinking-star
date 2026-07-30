@@ -6,6 +6,8 @@ class LevelConfigEntry:
 	var level_config: CoreLevelConfig.LevelConfig
 	var level_theme_config: LevelTheme.LevelThemeConfig
 
+# hard-coded test code
+# will be removed when level editor is ready
 static func create_all_level_configs() -> Array[LevelConfigEntry]:
 	var result: Array[LevelConfigEntry] = []
 	var config_entry: LevelConfigEntry = null

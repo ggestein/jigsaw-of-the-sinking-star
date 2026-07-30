@@ -145,18 +145,18 @@ transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.5,
 [node name="gate2" parent="Decos" unique_id=1034217210 instance=ExtResource("19_xaead")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 6.5, 0, -3.15)
 
+[node name="tree-log2" parent="Decos" unique_id=660025696 instance=ExtResource("25_u1o3h")]
+transform = Transform3D(-0.29837203, 0, -0.95444965, 0, 1, 0, 0.95444965, 0, -0.29837203, 8.274665, 0, 1.5455306)
+
+[node name="tree-log3" parent="Decos" unique_id=889180634 instance=ExtResource("25_u1o3h")]
+transform = Transform3D(-0.29837203, 0, -0.95444965, 0, 1, 0, 0.95444965, 0, -0.29837203, -0.6458254, 0, 1.3566177)
+
+[node name="flag2" parent="Decos" unique_id=555993310 instance=ExtResource("26_pygn2")]
+transform = Transform3D(-0.6018151, 0, 0.7986355, 0, 1, 0, -0.7986355, 0, -0.6018151, 1.5, 2.000279, -3.5)
+
 [node name="WorldEnvironment" parent="." unique_id=1899066987 instance=ExtResource("18_5eusw")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2034396879]
 transform = Transform3D(-0.8812433, 0.40164086, -0.2491884, 0, 0.52720106, 0.84974056, 0.47266293, 0.7488282, -0.4645924, 0, 0, 0)
 light_energy = 0.2
 shadow_enabled = true
-
-[node name="tree-log2" parent="." unique_id=660025696 instance=ExtResource("25_u1o3h")]
-transform = Transform3D(-0.29837203, 0, -0.95444965, 0, 1, 0, 0.95444965, 0, -0.29837203, 8.274665, 0, 1.5455306)
-
-[node name="tree-log3" parent="." unique_id=889180634 instance=ExtResource("25_u1o3h")]
-transform = Transform3D(-0.29837203, 0, -0.95444965, 0, 1, 0, 0.95444965, 0, -0.29837203, -0.6458254, 0, 1.3566177)
-
-[node name="flag2" parent="." unique_id=555993310 instance=ExtResource("26_pygn2")]
-transform = Transform3D(-0.6018151, 0, 0.7986355, 0, 1, 0, -0.7986355, 0, -0.6018151, 1.5, 2.000279, -3.5)

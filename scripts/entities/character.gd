@@ -23,7 +23,6 @@ func find_animation_player_in_children() -> AnimationPlayer:
 
 func _ready():
 	anim_player = find_animation_player_in_children()
-	print("CHARACTER[%s] : %s" % [self.name, anim_player])
 	if anim_player:
 		anim_player.play(IDLE_ANIM_NAME)
 	
