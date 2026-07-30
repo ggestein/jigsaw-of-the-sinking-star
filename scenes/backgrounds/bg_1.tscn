@@ -17,25 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://3bhv0tsiirde" path="res://arts/kenney_castle_kit/wall-narrow-wood-fence.glb" id="13_qorer"]
 [ext_resource type="PackedScene" uid="uid://bwjvj5wsrk2ce" path="res://arts/kenney_castle_kit/tower-square-base.glb" id="14_xaead"]
 [ext_resource type="PackedScene" uid="uid://bo048vwyduwjp" path="res://arts/kenney_castle_kit/tower-square-base-border.glb" id="15_uvacq"]
-
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5eusw"]
-
-[sub_resource type="Sky" id="Sky_8ldlj"]
-sky_material = SubResource("ProceduralSkyMaterial_5eusw")
-
-[sub_resource type="Environment" id="Environment_se8m8"]
-background_mode = 2
-sky = SubResource("Sky_8ldlj")
-ambient_light_source = 3
-ambient_light_color = Color(1, 1, 1, 1)
-ambient_light_energy = 0.0
-ssao_enabled = true
-ssao_radius = 1.6
-ssao_intensity = 3.19
-glow_enabled = true
-glow_intensity = 1.0
-glow_strength = 1.6
-glow_bloom = 0.01
+[ext_resource type="PackedScene" uid="uid://ctt3k0hpc4u7n" path="res://scenes/environment/default_world_environment.tscn" id="18_5eusw"]
 
 [node name="Bg1" type="Node3D" unique_id=2074501229]
 
@@ -174,8 +156,7 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.5,
 [node name="tower-square-mid-door2" parent="Decos" unique_id=1369243250 instance=ExtResource("10_7calo")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.5, 0, -3.5)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=497420458]
-environment = SubResource("Environment_se8m8")
+[node name="WorldEnvironment" parent="." unique_id=1899066987 instance=ExtResource("18_5eusw")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2034396879]
 transform = Transform3D(-0.8812433, 0.40164086, -0.2491884, 0, 0.52720106, 0.84974056, 0.47266293, 0.7488282, -0.4645924, 0, 0, 0)

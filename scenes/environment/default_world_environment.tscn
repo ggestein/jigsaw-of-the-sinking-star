@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://ctt3k0hpc4u7n"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5eusw"]
+
+[sub_resource type="Sky" id="Sky_8ldlj"]
+sky_material = SubResource("ProceduralSkyMaterial_5eusw")
+
+[sub_resource type="Environment" id="Environment_se8m8"]
+background_mode = 2
+sky = SubResource("Sky_8ldlj")
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.0
+ssao_enabled = true
+ssao_radius = 1.6
+ssao_intensity = 3.19
+glow_enabled = true
+glow_intensity = 1.0
+glow_strength = 1.6
+glow_bloom = 0.01
+
+[node name="WorldEnvironment" type="WorldEnvironment" unique_id=1899066987]
+environment = SubResource("Environment_se8m8")

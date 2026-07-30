@@ -5,6 +5,7 @@ const FAST_FORWARD_DELTA_TIME_FACTOR: float = 8.0
 const CAMERA_FOCUS_HEIGHT_FACTOR: float = 0.6
 const CAMERA_FOCUS_BACKWARD_FACTOR: float = 0.25
 const CAMERA_FOCUS_POSITION_Y_RATIO: float = 0.4
+const DEFAULT_WORLD_ENV_PATH: StringName = "res://scenes/environment/default_world_environment.tscn"
 
 class WinProcess:
 	var win_base_ticks: int
@@ -92,6 +93,8 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 			cube_inst.position.z = -(obs.y + 0.5)
 			cube_inst.scale = Vector3(1.0, 1.0, 1.0)
 			obstacle_node_map[obs_idx] = cube_inst
+		var default_env_inst = load(DEFAULT_WORLD_ENV_PATH).instantiate()
+		add_child(default_env_inst)
 	# setup characters
 	for chr_idx in range(0, len(game_instance_args.level_data.character_data)):
 		var chr_cls := game_instance_args.level_data.character_data[chr_idx]
