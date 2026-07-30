@@ -210,6 +210,7 @@ func force_refresh():
 		var box_inst := current_state.boxes[box_idx]
 		node.visible = not box_inst.killed
 		node.position = grid_to_world(box_inst.position)
+		node.set_pushing_face(-1)
 	for pad_idx in pad_node_map:
 		var node := pad_node_map[pad_idx]
 		node.set_pressed_im(current_state.pads_active[pad_idx])
