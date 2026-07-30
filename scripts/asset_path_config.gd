@@ -31,9 +31,6 @@ static func box_yellow_packedscene_path() -> StringName:
 static func exchange_effect_packedscene_path() -> StringName:
 	return EFFECT_BASE_PATH + "exchange_effect.tscn"
 
-static func trans_effect_packedscene_path() -> StringName:
-	return EFFECT_BASE_PATH + "trans_effect.tscn"
-
 static func killed_effect_packedscene_path() -> StringName:
 	return EFFECT_BASE_PATH + "killed_effect.tscn"
 
