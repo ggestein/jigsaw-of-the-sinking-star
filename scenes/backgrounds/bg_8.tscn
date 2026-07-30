@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://f3h2wb2s87yx" path="res://arts/kenney_castle_kit/ground.glb" id="1_t8i5e"]
 [ext_resource type="PackedScene" uid="uid://bh8vo07qww7bg" path="res://arts/kenney_castle_kit/wall-corner.glb" id="2_clcyh"]
 [ext_resource type="PackedScene" uid="uid://bnj5hv2kitmdn" path="res://arts/kenney_castle_kit/wall.glb" id="3_sghk4"]
+[ext_resource type="PackedScene" uid="uid://dsgluql26jdbh" path="res://arts/kenney_castle_kit/wall-corner-slant.glb" id="8_208ah"]
 [ext_resource type="PackedScene" uid="uid://bo048vwyduwjp" path="res://arts/kenney_castle_kit/tower-square-base-border.glb" id="8_m8pyh"]
 [ext_resource type="PackedScene" uid="uid://fktuq6prbwdv" path="res://arts/kenney_castle_kit/wall-to-narrow.glb" id="11_8t6mf"]
 [ext_resource type="PackedScene" uid="uid://cj7vtteypwoei" path="res://arts/kenney_castle_kit/wall-narrow.glb" id="12_4c3hc"]
@@ -39,9 +40,6 @@ transform = Transform3D(100, 0, 0, 0, 1, 0, 0, 0, 100, 5.5, 0, -1.5)
 [node name="wall2" parent="Walls" unique_id=901321327 instance=ExtResource("3_sghk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -0.5)
 
-[node name="wall11" parent="Walls" unique_id=112060915 instance=ExtResource("3_sghk4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0.5)
-
 [node name="wall3" parent="Walls" unique_id=1214222122 instance=ExtResource("3_sghk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, -1.5)
 
@@ -59,9 +57,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -1.5)
 
 [node name="wall9" parent="Walls" unique_id=633519262 instance=ExtResource("3_sghk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -0.5)
-
-[node name="wall10" parent="Walls" unique_id=992417105 instance=ExtResource("3_sghk4")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, 0.5)
 
 [node name="wall6" parent="Walls" unique_id=227480909 instance=ExtResource("3_sghk4")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 0, -3.5)
@@ -140,6 +135,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, 0.5)
 
 [node name="tower-square-base-border7" parent="Walls" unique_id=667196021 instance=ExtResource("8_m8pyh")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.5, 0, 0.5)
+
+[node name="wall-corner-slant2" parent="Walls" unique_id=1158791332 instance=ExtResource("8_208ah")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.5, 0, 0.5)
+
+[node name="wall-corner-slant3" parent="Walls" unique_id=436556832 instance=ExtResource("8_208ah")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 7.5, 0, 0.5)
 
 [node name="Decos" type="Node3D" parent="." unique_id=515266446]
 

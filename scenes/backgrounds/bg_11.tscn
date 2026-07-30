@@ -3,7 +3,14 @@
 [ext_resource type="PackedScene" uid="uid://f3h2wb2s87yx" path="res://arts/kenney_castle_kit/ground.glb" id="1_vv0mw"]
 [ext_resource type="PackedScene" uid="uid://bnj5hv2kitmdn" path="res://arts/kenney_castle_kit/wall.glb" id="2_qjeej"]
 [ext_resource type="PackedScene" uid="uid://bo048vwyduwjp" path="res://arts/kenney_castle_kit/tower-square-base-border.glb" id="4_qjeej"]
+[ext_resource type="PackedScene" uid="uid://3bhv0tsiirde" path="res://arts/kenney_castle_kit/wall-narrow-wood-fence.glb" id="5_tj0jk"]
+[ext_resource type="PackedScene" uid="uid://cedre267pr7et" path="res://arts/kenney_castle_kit/tower-square-mid-windows.glb" id="6_c44lg"]
+[ext_resource type="PackedScene" uid="uid://r2jgpv4tgf3f" path="res://arts/kenney_castle_kit/tower-square-top-roof-rounded.glb" id="7_2qls1"]
+[ext_resource type="PackedScene" uid="uid://bvh0tyj2twbtg" path="res://arts/kenney_castle_kit/tree-large.glb" id="8_jsgoq"]
+[ext_resource type="PackedScene" uid="uid://dk855m24d1ikr" path="res://arts/kenney_castle_kit/tree-log.glb" id="9_hrt7s"]
+[ext_resource type="PackedScene" uid="uid://dx0b5lob2olno" path="res://arts/kenney_castle_kit/tree-small.glb" id="10_t5von"]
 [ext_resource type="PackedScene" uid="uid://dsgluql26jdbh" path="res://arts/kenney_castle_kit/wall-corner-slant.glb" id="11_ep5dq"]
+[ext_resource type="PackedScene" uid="uid://cx3i213ibfe0p" path="res://arts/kenney_castle_kit/rocks-large.glb" id="11_pbu05"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5eusw"]
 
@@ -36,9 +43,6 @@ transform = Transform3D(100, 0, 0, 0, 1, 0, 0, 0, 100, 5.5, 0, -1.5)
 [node name="wall18" parent="Walls" unique_id=785433509 instance=ExtResource("2_qjeej")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 10.5, 0, -7.5)
 
-[node name="wall19" parent="Walls" unique_id=251667054 instance=ExtResource("2_qjeej")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 9.5, 0, -7.5)
-
 [node name="wall20" parent="Walls" unique_id=271979435 instance=ExtResource("2_qjeej")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 8.5, 0, -7.5)
 
@@ -53,15 +57,6 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.5,
 
 [node name="wall24" parent="Walls" unique_id=1778453972 instance=ExtResource("2_qjeej")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 4.5, 0, -7.5)
-
-[node name="wall25" parent="Walls" unique_id=1586348767 instance=ExtResource("2_qjeej")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.5, 0, -7.5)
-
-[node name="wall26" parent="Walls" unique_id=1977004469 instance=ExtResource("2_qjeej")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 2.5, 0, -7.5)
-
-[node name="wall27" parent="Walls" unique_id=1889969098 instance=ExtResource("2_qjeej")]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 1.5, 0, -7.5)
 
 [node name="wall28" parent="Walls" unique_id=1802086214 instance=ExtResource("2_qjeej")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0.5, 0, -7.5)
@@ -159,7 +154,40 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, -3.5)
 [node name="tower-square-base-border7" parent="Walls" unique_id=1904236386 instance=ExtResource("4_qjeej")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0, -3.5)
 
+[node name="wall-narrow-wood-fence2" parent="Walls" unique_id=1741188207 instance=ExtResource("5_tj0jk")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 3.5, 0, -7.5)
+
+[node name="wall-narrow-wood-fence3" parent="Walls" unique_id=1516777620 instance=ExtResource("5_tj0jk")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2.5, 0, -7.5)
+
+[node name="wall-narrow-wood-fence4" parent="Walls" unique_id=7625271 instance=ExtResource("5_tj0jk")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 1.5, 0, -7.5)
+
+[node name="tower-square-mid-windows2" parent="Walls" unique_id=242138317 instance=ExtResource("6_c44lg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 0, -7.5)
+
+[node name="tower-square-top-roof-rounded2" parent="Walls" unique_id=523308031 instance=ExtResource("7_2qls1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.5, 1, -7.5)
+
 [node name="Decos" type="Node3D" parent="." unique_id=515266446]
+
+[node name="tree-large2" parent="Decos" unique_id=1274958199 instance=ExtResource("8_jsgoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.227104, 0, -9.0608425)
+
+[node name="tree-large4" parent="Decos" unique_id=1880996405 instance=ExtResource("8_jsgoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16384864, 9.536743e-07, -8.595688)
+
+[node name="tree-log2" parent="Decos" unique_id=660025696 instance=ExtResource("9_hrt7s")]
+transform = Transform3D(0.9366722, 0, -0.3502074, 0, 1, 0, 0.3502074, 0, 0.9366722, -1.9053025, 9.536743e-07, -7.115464)
+
+[node name="tree-small2" parent="Decos" unique_id=503300513 instance=ExtResource("10_t5von")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.738756, 0, -6.80018)
+
+[node name="tree-large3" parent="Decos" unique_id=1519820049 instance=ExtResource("8_jsgoq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.72514, 0, -0.58821476)
+
+[node name="rocks-large2" parent="Decos" unique_id=1389796469 instance=ExtResource("11_pbu05")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.658535, 0, -2.492087)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=497420458]
 environment = SubResource("Environment_se8m8")

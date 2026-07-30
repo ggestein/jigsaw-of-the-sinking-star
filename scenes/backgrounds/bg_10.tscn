@@ -9,7 +9,10 @@
 [ext_resource type="PackedScene" uid="uid://ochkgb8dop1m" path="res://arts/kenney_castle_kit/wall-narrow-wood.glb" id="9_5is1r"]
 [ext_resource type="PackedScene" uid="uid://fktuq6prbwdv" path="res://arts/kenney_castle_kit/wall-to-narrow.glb" id="10_enpko"]
 [ext_resource type="PackedScene" uid="uid://dsgluql26jdbh" path="res://arts/kenney_castle_kit/wall-corner-slant.glb" id="11_8mmbu"]
+[ext_resource type="PackedScene" uid="uid://bvh0tyj2twbtg" path="res://arts/kenney_castle_kit/tree-large.glb" id="12_n7ase"]
 [ext_resource type="PackedScene" uid="uid://q0yj14rs3xok" path="res://arts/kenney_castle_kit/wall-narrow-stairs-rail.glb" id="12_rfusf"]
+[ext_resource type="PackedScene" uid="uid://cx3i213ibfe0p" path="res://arts/kenney_castle_kit/rocks-large.glb" id="13_elxgl"]
+[ext_resource type="PackedScene" uid="uid://dk855m24d1ikr" path="res://arts/kenney_castle_kit/tree-log.glb" id="14_elxgl"]
 [ext_resource type="PackedScene" uid="uid://ch038c04vy0ly" path="res://arts/kenney_castle_kit/bridge-straight.glb" id="15_ysuf3"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_5eusw"]
@@ -209,6 +212,24 @@ transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -7.5)
 transform = Transform3D(1.1, 0, 0, 0, 1, 0, 0, 0, 1, 5.5, 0, -7.5)
 
 [node name="Decos" type="Node3D" parent="." unique_id=515266446]
+
+[node name="tree-large2" parent="Decos" unique_id=1274958199 instance=ExtResource("12_n7ase")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.9566445, 0, -1.2415714)
+
+[node name="tree-large3" parent="Decos" unique_id=2091720482 instance=ExtResource("12_n7ase")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.700108, 0, -9.292804)
+
+[node name="rocks-large2" parent="Decos" unique_id=1389796469 instance=ExtResource("13_elxgl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.417509, 0, 1.1901789)
+
+[node name="rocks-large3" parent="Decos" unique_id=1061017422 instance=ExtResource("13_elxgl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.280985, 0, -2.9270725)
+
+[node name="rocks-large4" parent="Decos" unique_id=1355546139 instance=ExtResource("13_elxgl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22402382, 9.536743e-07, -9.18018)
+
+[node name="tree-log2" parent="Decos" unique_id=660025696 instance=ExtResource("14_elxgl")]
+transform = Transform3D(0.5075384, 0, -0.8616291, 0, 1, 0, 0.8616291, 0, 0.5075384, 2.277285, 0, 1.3448884)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=497420458]
 environment = SubResource("Environment_se8m8")
