@@ -481,7 +481,6 @@ func win_ticks() -> int:
 	return -1
 	
 func actual_apply_input(k: Key):
-	printt("actual_apply_input:", k)
 	if k == KEY_W:
 		player_input_queue.append(CoreGameplay.PlayerInput.MOVE_UP)
 	elif k == KEY_D:
