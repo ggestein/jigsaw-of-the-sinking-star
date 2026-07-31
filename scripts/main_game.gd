@@ -226,6 +226,7 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		var chr_idx = evt.args[0]
 		var prev_pos = evt.args[1]
 		var new_pos = evt.args[2]
+		var is_passive = evt.args[3]
 		# character_node_map[chr_idx].position = grid_to_world(new_pos)
 		var new_move_entry = MoveEntry.new()
 		new_move_entry.type = 1
@@ -233,6 +234,8 @@ func handle_core_gameplay_event(evt: CoreGameplay.Event):
 		new_move_entry.from = grid_to_world(prev_pos)
 		new_move_entry.to = grid_to_world(new_pos)
 		waiting_move_entries.append(new_move_entry)
+		if is_passive:
+			waiting_move_is_push = true
 	elif evt.type == CoreGameplay.EventType.CHAR_BLOCKED:
 		var blocked_cmd := CmdCharacterBlockedMove.new()
 		blocked_cmd.current_time = 0

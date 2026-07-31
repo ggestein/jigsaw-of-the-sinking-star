@@ -292,7 +292,12 @@ static func calculate_next_state(input: PlayerInput, level_data: LevelData, stat
 		if new_pos != prev_pos:
 			var evt := Event.new()
 			evt.type = EventType.CHAR_MOVE
-			evt.args = [chr_idx, prev_pos, new_pos]
+			var is_passive := false
+			for pm in passive_moves:
+				if pm[0] == 1 and pm[1] == chr_idx:
+					is_passive = true
+					break
+			evt.args = [chr_idx, prev_pos, new_pos, is_passive]
 			has_position_change = true
 			events.append(evt)
 	for box_idx in range(0, len(result.next_state.boxes)):
