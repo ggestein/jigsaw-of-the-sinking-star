@@ -320,6 +320,7 @@ func trigger_win_process():
 	won = WinProcess.new()
 	won.win_base_ticks = Time.get_ticks_usec()
 	won.win_camera_base_pos = main_camera.position
+	player_input_queue.clear()
 	
 func append_cmd(cmd):
 	cmd_queue.append(cmd)
@@ -371,6 +372,26 @@ func process_move_entry(entry: MoveEntry, ratio: float, need_stop: bool):
 		elif target_node_3d is Character:
 			var chr := target_node_3d as Character
 			var cur_need_stop := need_stop
+			# if the character has pending input that will trigger continuous move
+			# then keep playing moving animation
+			if cur_need_stop:
+				var cur_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
+				if \
+					entry.type == 1 and entry.idx == cur_state.current_character_index and \
+					len(cmd_queue) <= 1 and \
+					won == null:
+					if Input.is_key_pressed(KEY_W):
+						actual_apply_input(KEY_W)
+						cur_need_stop = false
+					elif Input.is_key_pressed(KEY_D):
+						actual_apply_input(KEY_D)
+						cur_need_stop = false
+					elif Input.is_key_pressed(KEY_S):
+						actual_apply_input(KEY_S)
+						cur_need_stop = false
+					elif Input.is_key_pressed(KEY_A):
+						actual_apply_input(KEY_A)
+						cur_need_stop = false
 			# if the character is still moving in pending command, then keep play moving animation
 			if cur_need_stop:
 				var pending_cmd = null if len(cmd_queue) < 2 else cmd_queue[1]
@@ -407,6 +428,7 @@ func process_single_cmd(cmd: Variant, dt: float) -> float:
 		var ratio = min(1.0, cmd.current_time / cmd.total_time)
 		ratio = (0.25 - pow((ratio - 0.5), 2)) * 1.1
 		node.position = lerp(cmd_blocked.from_pos, cmd_blocked.to_pos, ratio)
+		node.set_is_moving(false)
 	return cmd.current_time - cmd.total_time
 
 func process_cmds(dt: float) -> void:
@@ -430,7 +452,8 @@ func post_handle_input_queue_process():
 	if len(waiting_move_entries) > 0:
 		var cmd_move := CmdNormalMove.new()
 		cmd_move.current_time = 0.0
-		cmd_move.total_time = 0.7 if waiting_move_is_push else 0.4
+		cmd_move.total_time = 0.5 if waiting_move_is_push else 0.3
+		print("cmd_move.total_time == %f" % cmd_move.total_time)
 		cmd_move.move_entries = waiting_move_entries
 		append_cmd(cmd_move)
 
@@ -458,6 +481,23 @@ func win_ticks() -> int:
 		return Time.get_ticks_usec() - won.win_base_ticks
 	return -1
 	
+func actual_apply_input(k: Key):
+	printt("actual_apply_input:", k)
+	if k == KEY_W:
+		player_input_queue.append(CoreGameplay.PlayerInput.MOVE_UP)
+	elif k == KEY_D:
+		player_input_queue.append(CoreGameplay.PlayerInput.MOVE_RIGHT)
+	elif k == KEY_S:
+		player_input_queue.append(CoreGameplay.PlayerInput.MOVE_DOWN)
+	elif k == KEY_A:
+		player_input_queue.append(CoreGameplay.PlayerInput.MOVE_LEFT)
+	elif k == KEY_R:
+		player_input_queue.append(CoreGameplay.PlayerInput.RESET)
+	elif k == KEY_Z:
+		player_input_queue.append(CoreGameplay.PlayerInput.REWIND)
+	elif k == KEY_C:
+		player_input_queue.append(CoreGameplay.PlayerInput.SWITCH)
+	
 func main_game_input(evt: InputEvent):
 	if current_game_instance == null or won:
 		return
@@ -466,20 +506,7 @@ func main_game_input(evt: InputEvent):
 			return
 		var evt_key: InputEventKey = evt as InputEventKey
 		if evt_key.is_pressed() and not evt_key.is_echo():
-			if evt_key.keycode == KEY_W:
-				player_input_queue.append(CoreGameplay.PlayerInput.MOVE_UP)
-			elif evt_key.keycode == KEY_D:
-				player_input_queue.append(CoreGameplay.PlayerInput.MOVE_RIGHT)
-			elif evt_key.keycode == KEY_S:
-				player_input_queue.append(CoreGameplay.PlayerInput.MOVE_DOWN)
-			elif evt_key.keycode == KEY_A:
-				player_input_queue.append(CoreGameplay.PlayerInput.MOVE_LEFT)
-			elif evt_key.keycode == KEY_R:
-				player_input_queue.append(CoreGameplay.PlayerInput.RESET)
-			elif evt_key.keycode == KEY_Z:
-				player_input_queue.append(CoreGameplay.PlayerInput.REWIND)
-			elif evt_key.keycode == KEY_C:
-				player_input_queue.append(CoreGameplay.PlayerInput.SWITCH)
+			actual_apply_input(evt_key.keycode)
 
 func clearup():
 	for child_idx in range(0, get_child_count()):
