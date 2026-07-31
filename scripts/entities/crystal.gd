@@ -34,5 +34,7 @@ func _process(delta: float) -> void:
 	# vertical and horizontal offset of the body, for emulate the different rotating pivot
 	# when the body lean to different direction
 	body.position.y = sin(max_rot) * verticle_move_amount
-	body.position.x = (1 - cos(body.rotation.z)) * verticle_move_amount
-	body.position.z = (1 - cos(body.rotation.x)) * verticle_move_amount
+	var horizontal_move_amount_x := (1 - cos(body.rotation.z)) * verticle_move_amount
+	body.position.x = horizontal_move_amount_x * (-1.0 if body.rotation.z > 0 else 1.0)
+	var horizontal_move_amount_z := (1 - cos(body.rotation.x)) * verticle_move_amount
+	body.position.z = horizontal_move_amount_z * (-1.0 if body.rotation.x < 0 else 1.0)
