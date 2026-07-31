@@ -453,7 +453,6 @@ func post_handle_input_queue_process():
 		var cmd_move := CmdNormalMove.new()
 		cmd_move.current_time = 0.0
 		cmd_move.total_time = 0.5 if waiting_move_is_push else 0.3
-		print("cmd_move.total_time == %f" % cmd_move.total_time)
 		cmd_move.move_entries = waiting_move_entries
 		append_cmd(cmd_move)
 
