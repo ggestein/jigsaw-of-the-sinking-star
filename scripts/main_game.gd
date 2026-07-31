@@ -1,7 +1,7 @@
 class_name MainGame
 extends Node
 
-const FAST_FORWARD_DELTA_TIME_FACTOR: float = 8.0
+const FAST_FORWARD_DELTA_TIME_FACTOR: float = 4.0
 const CAMERA_FOCUS_HEIGHT_FACTOR: float = 0.6
 const CAMERA_FOCUS_BACKWARD_FACTOR: float = 0.25
 const CAMERA_FOCUS_POSITION_Y_RATIO: float = 0.4
@@ -49,8 +49,7 @@ var current_player_cursor: PlayerCursor
 var ground_grid: GroundGrid
 var player_input_queue: Array[CoreGameplay.PlayerInput] = []
 var core_gameplay_event_queue: Array[CoreGameplay.Event] = []
-var processing_cmd: Variant = null
-var pending_cmd: Variant = null
+var cmd_queue: Array[Variant] = []
 var waiting_move_entries: Array[MoveEntry]
 var waiting_move_is_push: bool = false
 var won: WinProcess = null
@@ -193,8 +192,7 @@ func refresh_cursor_color():
 	var cls := current_game_instance.level_data.character_data[current_idx]
 	current_player_cursor.set_character_class(cls)
 func force_refresh():
-	processing_cmd = null
-	pending_cmd = null
+	cmd_queue.clear()
 	var current_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
 	for chr_idx in character_node_map:
 		var node := character_node_map[chr_idx]
@@ -324,12 +322,7 @@ func trigger_win_process():
 	won.win_camera_base_pos = main_camera.position
 	
 func append_cmd(cmd):
-	if pending_cmd != null:
-		return
-	if processing_cmd == null:
-		processing_cmd = cmd
-	elif pending_cmd == null:
-		pending_cmd = cmd
+	cmd_queue.append(cmd)
 	
 func process_win():
 	if won == null:
@@ -359,7 +352,8 @@ func get_node3d_by_type_and_index(type: int, idx: int) -> Node3D:
 func process_move_entry(entry: MoveEntry, ratio: float, need_stop: bool):
 	var target_node_3d := get_node3d_by_type_and_index(entry.type, entry.idx)
 	if target_node_3d != null:
-		var actual_ratio = 1 - pow(1 - ratio, 3)
+		# var actual_ratio = 1 - pow(1 - ratio, 3)
+		var actual_ratio = ratio
 		target_node_3d.position = lerp(entry.from, entry.to, actual_ratio)
 		if target_node_3d is Crystal:
 			var crystal := target_node_3d as Crystal
@@ -379,6 +373,7 @@ func process_move_entry(entry: MoveEntry, ratio: float, need_stop: bool):
 			var cur_need_stop := need_stop
 			# if the character is still moving in pending command, then keep play moving animation
 			if cur_need_stop:
+				var pending_cmd = null if len(cmd_queue) < 2 else cmd_queue[1]
 				if pending_cmd != null and pending_cmd is CmdNormalMove:
 					var actual_pending_moving_cmd := pending_cmd as CmdNormalMove
 					for pending_entry in actual_pending_moving_cmd.move_entries:
@@ -415,16 +410,16 @@ func process_single_cmd(cmd: Variant, dt: float) -> float:
 	return cmd.current_time - cmd.total_time
 
 func process_cmds(dt: float) -> void:
+	var processing_cmd = null if len(cmd_queue) < 1 else cmd_queue[0]
 	if processing_cmd != null:
 		var pdt = dt
-		if pending_cmd != null:
+		if len(cmd_queue) > 1:
 			pdt = pdt * FAST_FORWARD_DELTA_TIME_FACTOR
 		var overflow_time := process_single_cmd(processing_cmd, pdt)
 		if overflow_time > 0.0:
-			processing_cmd = pending_cmd
-			if processing_cmd != null:
-				processing_cmd.current_time = overflow_time / FAST_FORWARD_DELTA_TIME_FACTOR
-			pending_cmd = null
+			cmd_queue.remove_at(0)
+			if len(cmd_queue) > 0:
+				cmd_queue[0].current_time = overflow_time / FAST_FORWARD_DELTA_TIME_FACTOR
 				
 func prepare_input_queue_process():
 	waiting_move_entries = []
@@ -467,7 +462,7 @@ func main_game_input(evt: InputEvent):
 	if current_game_instance == null or won:
 		return
 	if evt is InputEventKey:
-		if pending_cmd != null:
+		if len(cmd_queue) > 1:
 			return
 		var evt_key: InputEventKey = evt as InputEventKey
 		if evt_key.is_pressed() and not evt_key.is_echo():
