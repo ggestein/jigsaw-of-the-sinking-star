@@ -53,6 +53,8 @@ var cmd_queue: Array[Variant] = []
 var waiting_move_entries: Array[MoveEntry]
 var waiting_move_is_push: bool = false
 var won: WinProcess = null
+var current_world_env: WorldEnvironment = null
+var last_force_refresh_time := -1
 
 func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.LevelThemeConfig):
 	var game_instance_args := CoreLevelConfig.calculate_game_instance_args(leve_config)
@@ -69,6 +71,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 		if proto != null:
 			var bg_inst = proto.instantiate()
 			add_child(bg_inst)
+			current_world_env = find_env_in_children_recursive(bg_inst)
 			need_generated_bg = false
 	if need_generated_bg:
 		for y in range(ly, ly + lh):
@@ -94,6 +97,7 @@ func setup(leve_config: CoreLevelConfig.LevelConfig, level_theme: LevelTheme.Lev
 			obstacle_node_map[obs_idx] = cube_inst
 		var default_env_inst = load(DEFAULT_WORLD_ENV_PATH).instantiate()
 		add_child(default_env_inst)
+		current_world_env = default_env_inst
 	# setup characters
 	for chr_idx in range(0, len(game_instance_args.level_data.character_data)):
 		var chr_cls := game_instance_args.level_data.character_data[chr_idx]
@@ -192,6 +196,7 @@ func refresh_cursor_color():
 	var cls := current_game_instance.level_data.character_data[current_idx]
 	current_player_cursor.set_character_class(cls)
 func force_refresh():
+	last_force_refresh_time = Time.get_ticks_usec()
 	cmd_queue.clear()
 	var current_state := current_game_instance.history_states[len(current_game_instance.history_states) - 1]
 	for chr_idx in character_node_map:
@@ -344,6 +349,19 @@ func process_win():
 	var focus_pos := Vector3(lx + 0.5 * lw, 0.0, -(ly + CAMERA_FOCUS_POSITION_Y_RATIO * lh))
 	main_camera.look_at(focus_pos)
 	
+func process_force_refresh_effect():
+	if last_force_refresh_time < 0:
+		return
+	if current_world_env == null:
+		return
+	var dt := Time.get_ticks_usec() - last_force_refresh_time
+	var ratio := 1.0 - dt / 200000.0
+	if ratio < 0.0:
+		ratio = 0.0
+		last_force_refresh_time = -1
+	current_world_env.environment.ambient_light_energy = ratio * 0.35
+	current_world_env.environment.ambient_light_sky_contribution = 1.0 - ratio * 0.5
+	
 func get_node3d_by_type_and_index(type: int, idx: int) -> Node3D:
 	if type == 1:
 		if character_node_map.has(idx):
@@ -351,6 +369,15 @@ func get_node3d_by_type_and_index(type: int, idx: int) -> Node3D:
 	if type == 2:
 		if box_node_map.has(idx):
 			return box_node_map[idx]
+	return null
+	
+static func find_env_in_children_recursive(root: Node) -> WorldEnvironment:
+	if root is WorldEnvironment:
+		return root as WorldEnvironment
+	for child in root.get_children():
+		var result := find_env_in_children_recursive(child)
+		if result != null:
+			return result
 	return null
 
 func process_move_entry(entry: MoveEntry, ratio: float, need_stop: bool):
@@ -477,6 +504,7 @@ func _process(delta: float) -> void:
 	process_cmds(delta)
 	process_player_cursor()
 	process_win()
+	process_force_refresh_effect()
 	
 func win_ticks() -> int:
 	if won != null:
@@ -498,7 +526,7 @@ func actual_apply_input(k: Key):
 		player_input_queue.append(CoreGameplay.PlayerInput.REWIND)
 	elif k == KEY_C:
 		player_input_queue.append(CoreGameplay.PlayerInput.SWITCH)
-	
+
 func main_game_input(evt: InputEvent):
 	if current_game_instance == null or won:
 		return
@@ -520,3 +548,4 @@ func clearup():
 	ground_grid = null
 	main_camera = null
 	player_input_queue = []
+	current_world_env = null
